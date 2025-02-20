@@ -13,6 +13,7 @@ const material = new THREE.MeshBasicMaterial({
 });
 const mesh = new THREE.Mesh(geometry, material);
 mesh.position.set(0, 0, 0);
+mesh.scale.set(2, 0.5, 0.5);
 scene.add(mesh);
 
 // Helper
