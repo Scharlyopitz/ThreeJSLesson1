@@ -16,7 +16,6 @@ mesh.position.set(0, 0, 0);
 scene.add(mesh);
 
 // Helper
-
 const helper = new THREE.AxesHelper();
 scene.add(helper);
 
