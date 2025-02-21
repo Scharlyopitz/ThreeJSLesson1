@@ -18,8 +18,8 @@ const numberRotation = (number) => {
 };
 
 const animateCube = (e) => {
-  cube.rotation.x = numberRotation(e.clientX);
-  cube.rotation.y = numberRotation(e.clientY);
+  cube.rotation.x = numberRotation(e.clientY);
+  cube.rotation.y = numberRotation(e.clientX);
 };
 
 window.addEventListener("mousemove", animateCube);
