@@ -1,3 +1,4 @@
+import "./style.css";
 import * as THREE from "three";
 
 const canvas = document.querySelector(".webgl");
@@ -5,34 +6,53 @@ const canvas = document.querySelector(".webgl");
 // Scene
 const scene = new THREE.Scene();
 
-// Object
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({
-  color: "#ffffff",
-  wireframe: false,
-});
-const mesh = new THREE.Mesh(geometry, material);
-mesh.position.set(0, 0, 0);
-mesh.scale.set(2, 0.5, 0.5);
-scene.add(mesh);
+// Object Settings
 
-// Helper
-const helper = new THREE.AxesHelper();
-scene.add(helper);
+const cube = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshBasicMaterial({ color: "#ff0000" })
+);
 
-// Camera
+const numberRotation = (number) => {
+  return number * (Math.PI / 180);
+};
 
-const size = { width: 800, height: 600 };
+const animateCube = (e) => {
+  cube.rotation.x = numberRotation(e.clientX);
+  cube.rotation.y = numberRotation(e.clientY);
+};
+
+window.addEventListener("mousemove", animateCube);
+
+scene.add(cube);
+
+// Camera Settings
+
+const size = { width: window.innerWidth, height: window.innerHeight };
 
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
-camera.position.set(1, 1, 3);
+
+camera.position.set(0, 0, 3);
 scene.add(camera);
 
-// Renderer
+// LookAt
+// camera.lookAt(mesh.position);
+
+// Renderer(pour avoir un rendu)
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
+  antialias: true,
 });
 
-renderer.setSize(size.width, size.height);
+// Taille du rendu
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-renderer.render(scene, camera);
+// Animations
+const tick = () => {
+  // Render
+  renderer.render(scene, camera);
+
+  // Animation(activation)
+  window.requestAnimationFrame(tick);
+};
+tick();
