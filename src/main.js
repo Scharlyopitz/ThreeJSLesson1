@@ -2,7 +2,13 @@ import { animate } from "motion";
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
+import GUI from "lil-gui";
 
+// Debug
+const gui = new GUI();
+const debugObject = {};
+
+// Canvas
 const canvas = document.querySelector(".webgl");
 
 // Cursor
@@ -22,27 +28,63 @@ window.addEventListener("mousemove", mouseMoove);
 const scene = new THREE.Scene();
 
 // Create an empty BufferGeometry
-const geometry = new THREE.BufferGeometry();
+// const geometry = new THREE.BufferGeometry();
 
-const count = 300;
-const positionsArray = new Float32Array(count * 3 * 3);
+// const count = 300;
+// const positionsArray = new Float32Array(count * 3 * 3);
 
-for (let i = 0; i < count * 3 * 3; i++) {
-  positionsArray[i] = Math.random() - 0.5;
-}
+// for (let i = 0; i < count * 3 * 3; i++) {
+//   positionsArray[i] = Math.random() - 0.5;
+// }
 
-const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
-geometry.setAttribute("position", positionsAttribute);
+// const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
+// geometry.setAttribute("position", positionsAttribute);
 // Object Settings
+
+debugObject.color = "#ff0000";
 
 const cube = new THREE.BoxGeometry(1, 1, 1);
 
 const material = new THREE.MeshBasicMaterial({
-  color: "#ff0000",
+  color: debugObject.color,
   wireframe: true,
 });
 
-const mesh = new THREE.Mesh(geometry, material);
+const mesh = new THREE.Mesh(cube, material);
+
+// Debug UI parameters
+gui.add(mesh.position, "y").min(-2).max(2).step(0.01);
+gui.add(material, "wireframe");
+gui.addColor(debugObject, "color").onChange(() => {
+  material.color.set(debugObject.color);
+});
+
+debugObject.rotate = () => {
+  animate(
+    mesh.rotation,
+    { y: Math.PI * 2 },
+    { duration: 1, ease: [0.65, 0, 0.35, 1] }
+  );
+};
+
+gui.add(debugObject, "rotate");
+debugObject.subdivision = 2;
+gui
+  .add(debugObject, "subdivision")
+  .min(1)
+  .max(20)
+  .step(1)
+  .onFinishChange(() => {
+    mesh.geometry.dispose();
+    mesh.geometry = new THREE.BoxGeometry(
+      1,
+      1,
+      1,
+      debugObject.subdivision,
+      debugObject.subdivision,
+      debugObject.subdivision
+    );
+  });
 
 // const numberRotation = (number) => {
 //   return number * (Math.PI / 180);
@@ -78,6 +120,7 @@ scene.add(camera);
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
+
 // controls.target.x = 2;
 // controls.update();
 
