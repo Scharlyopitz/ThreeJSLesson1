@@ -6,18 +6,10 @@ import GUI from "lil-gui";
 
 // Texture
 
-const image = new Image();
-
 const URL = "/Midwam.png";
 
-const texture = new THREE.Texture(image);
+const texture = new THREE.TextureLoader().load(URL);
 texture.colorSpace = THREE.SRGBColorSpace;
-
-image.onload = () => {
-  texture.needsUpdate = true;
-};
-
-image.src = URL;
 
 // Debug
 const gui = new GUI({
