@@ -8,8 +8,38 @@ import GUI from "lil-gui";
 
 const URL = "/Midwam.png";
 
-const texture = new THREE.TextureLoader().load(URL);
+const loadingManager = new THREE.LoadingManager();
+
+// loadingManager.onStart = () => {
+//   console.log("start");
+// };
+// loadingManager.onLoad = () => {
+//   console.log("load");
+// };
+// loadingManager.onProgress = () => {
+//   console.log("progress");
+// };
+// loadingManager.onError = () => {
+//   console.log("error");
+// };
+
+const texture = new THREE.TextureLoader(loadingManager).load(URL);
 texture.colorSpace = THREE.SRGBColorSpace;
+
+// texture.repeat.x = 2;
+// texture.repeat.y = 2;
+// texture.wrapS = THREE.RepeatWrapping;
+// texture.wrapT = THREE.RepeatWrapping;
+
+// texture.offset.x = 0.5;
+// texture.offset.y = 0.5;
+
+// texture.rotation = Math.PI / 1;
+// texture.center.x = 0.5;
+// texture.center.y = 0.5;
+
+// texture.minFilter = THREE.NearestFilter;
+// texture.magFilter = THREE.NearestFilter;
 
 // Debug
 const gui = new GUI({
