@@ -5,8 +5,19 @@ import { OrbitControls } from "three/examples/jsm/Addons.js";
 import GUI from "lil-gui";
 
 // Debug
-const gui = new GUI();
+const gui = new GUI({
+  width: 360,
+  title: "Debug UI Scharly",
+});
 const debugObject = {};
+
+const pressToHide = (e) => {
+  if (e.key === "h") {
+    gui.show(gui._hidden);
+  }
+};
+
+window.addEventListener("keydown", pressToHide);
 
 // Canvas
 const canvas = document.querySelector(".webgl");
@@ -53,9 +64,11 @@ const material = new THREE.MeshBasicMaterial({
 const mesh = new THREE.Mesh(cube, material);
 
 // Debug UI parameters
-gui.add(mesh.position, "y").min(-2).max(2).step(0.01);
-gui.add(material, "wireframe");
-gui.addColor(debugObject, "color").onChange(() => {
+const cubeTweak = gui.addFolder("Super cube");
+
+cubeTweak.add(mesh.position, "y").min(-2).max(2).step(0.01);
+cubeTweak.add(material, "wireframe");
+cubeTweak.addColor(debugObject, "color").onChange(() => {
   material.color.set(debugObject.color);
 });
 
@@ -67,9 +80,9 @@ debugObject.rotate = () => {
   );
 };
 
-gui.add(debugObject, "rotate");
+cubeTweak.add(debugObject, "rotate");
 debugObject.subdivision = 2;
-gui
+cubeTweak
   .add(debugObject, "subdivision")
   .min(1)
   .max(20)
