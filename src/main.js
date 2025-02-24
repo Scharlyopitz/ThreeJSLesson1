@@ -4,6 +4,21 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import GUI from "lil-gui";
 
+// Texture
+
+const image = new Image();
+
+const URL = "/Midwam.png";
+
+const texture = new THREE.Texture(image);
+texture.colorSpace = THREE.SRGBColorSpace;
+
+image.onload = () => {
+  texture.needsUpdate = true;
+};
+
+image.src = URL;
+
 // Debug
 const gui = new GUI({
   width: 360,
@@ -15,7 +30,12 @@ const pressToHide = (e) => {
   if (e.key === "h") {
     gui.show(gui._hidden);
   }
+  if (e.key === "j") {
+    gui.open(gui._closed);
+  }
 };
+
+gui.close();
 
 window.addEventListener("keydown", pressToHide);
 
@@ -56,10 +76,7 @@ debugObject.color = "#ff0000";
 
 const cube = new THREE.BoxGeometry(1, 1, 1);
 
-const material = new THREE.MeshBasicMaterial({
-  color: debugObject.color,
-  wireframe: true,
-});
+const material = new THREE.MeshBasicMaterial({ map: texture });
 
 const mesh = new THREE.Mesh(cube, material);
 
