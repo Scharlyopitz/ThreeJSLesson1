@@ -3,6 +3,7 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import GUI from "lil-gui";
+import { RGBMLoader } from "three/examples/jsm/Addons.js";
 
 // Texture
 
@@ -102,8 +103,8 @@ const sphere = new THREE.SphereGeometry(0.5, 15, 16);
 
 // MeshStandardMaterial
 const material = new THREE.MeshStandardMaterial({
-  metalness: 0.45,
-  roughness: 0.65,
+  metalness: 0.7,
+  roughness: 0.2,
 });
 
 const ambientLight = new THREE.AmbientLight("#fff", 1);
@@ -115,6 +116,14 @@ pointLight.position.x = 2;
 pointLight.position.y = 3;
 pointLight.position.z = 4;
 scene.add(pointLight);
+
+const rgbeLoader = new RGBMLoader();
+rgbeLoader.load(URL, (evironementMAP) => {
+  evironementMAP.mapping = THREE.EquirectangularReflectionMapping;
+
+  scene.background = evironementMAP;
+  scene.environment = evironementMAP;
+});
 
 const mesh = new THREE.Mesh(sphere, material);
 mesh.position.set(-1.5, 0, 0);
