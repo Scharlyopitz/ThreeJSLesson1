@@ -26,21 +26,6 @@ const loadingManager = new THREE.LoadingManager();
 const texture = new THREE.TextureLoader(loadingManager).load(URL);
 texture.colorSpace = THREE.SRGBColorSpace;
 
-// texture.repeat.x = 2;
-// texture.repeat.y = 2;
-// texture.wrapS = THREE.RepeatWrapping;
-// texture.wrapT = THREE.RepeatWrapping;
-
-// texture.offset.x = 0.5;
-// texture.offset.y = 0.5;
-
-// texture.rotation = Math.PI / 1;
-// texture.center.x = 0.5;
-// texture.center.y = 0.5;
-
-// texture.minFilter = THREE.NearestFilter;
-// texture.magFilter = THREE.NearestFilter;
-
 // Debug
 const gui = new GUI({
   width: 360,
@@ -80,33 +65,58 @@ window.addEventListener("mousemove", mouseMoove);
 // Scene
 const scene = new THREE.Scene();
 
-// Create an empty BufferGeometry
-// const geometry = new THREE.BufferGeometry();
-
-// const count = 300;
-// const positionsArray = new Float32Array(count * 3 * 3);
-
-// for (let i = 0; i < count * 3 * 3; i++) {
-//   positionsArray[i] = Math.random() - 0.5;
-// }
-
-// const positionsAttribute = new THREE.BufferAttribute(positionsArray, 3);
-// geometry.setAttribute("position", positionsAttribute);
-// Object Settings
-
 debugObject.color = "#ff0000";
 
 const cube = new THREE.BoxGeometry(1, 1, 1);
 const plane = new THREE.PlaneGeometry(1, 1);
 const torus = new THREE.TorusGeometry(0.5, 0.2, 16, 32);
+const sphere = new THREE.SphereGeometry(0.5, 15, 16);
 
-const material = new THREE.MeshBasicMaterial({
-  color: "#ff0000",
-  // map: texture,
-  wireframe: false,
+// MeshBasicMaterial
+// const material = new THREE.MeshBasicMaterial({
+//   // color: "#ff0000",
+//   map: texture,
+//   wireframe: false,
+//   opacity: 0.5,
+//   transparent: true,
+//   // side: THREE.DoubleSide,
+// });
+
+// MeshNormalMaterial
+// const material = new THREE.MeshNormalMaterial({ flatShading: true });
+
+// MeshMatcapMaterial
+// const material = new THREE.MeshMatcapMaterial({ matcap: texture });
+
+// MeshLambertMaterial
+// const material = new THREE.MeshLambertMaterial();
+
+// MeshLambertMaterial
+// const material = new THREE.MeshPhongMaterial({
+//   shininess: 100,
+//   specular: "#1188ff",
+// });
+
+// MeshToonMaterial
+// const material = new THREE.MeshToonMaterial({ gradientMap: texture });
+
+// MeshStandardMaterial
+const material = new THREE.MeshStandardMaterial({
+  metalness: 0.45,
+  roughness: 0.65,
 });
 
-const mesh = new THREE.Mesh(cube, material);
+const ambientLight = new THREE.AmbientLight("#fff", 1);
+
+scene.add(ambientLight);
+
+const pointLight = new THREE.PointLight("#fff", 30);
+pointLight.position.x = 2;
+pointLight.position.y = 3;
+pointLight.position.z = 4;
+scene.add(pointLight);
+
+const mesh = new THREE.Mesh(sphere, material);
 mesh.position.set(-1.5, 0, 0);
 
 const planeMesh = new THREE.Mesh(plane, material);
@@ -115,48 +125,51 @@ const torusMesh = new THREE.Mesh(torus, material);
 torusMesh.position.set(1.5, 0, 0);
 
 // Debug UI parameters
-const cubeTweak = gui.addFolder("Super cube");
+const tweakFolder = gui.addFolder("Nice Tweak");
 
-cubeTweak.add(mesh.position, "y").min(-2).max(2).step(0.01);
-cubeTweak.add(material, "wireframe");
-cubeTweak.addColor(debugObject, "color").onChange(() => {
-  material.color.set(debugObject.color);
-});
+tweakFolder.add(material, "metalness").min(0).max(1).step(0.001);
+tweakFolder.add(material, "roughness").min(0).max(1).step(0.001);
 
-const animation = animate(
-  mesh.rotation,
-  { y: Math.PI * 2, x: Math.PI * 2 },
-  { duration: 10, ease: "linear", repeat: Infinity }
-);
-animation.pause();
+// cubeTweak.add(mesh.position, "y").min(-2).max(2).step(0.01);
+// // cubeTweak.add(material, "wireframe");
+// cubeTweak.addColor(debugObject, "color").onChange(() => {
+//   material.color.set(debugObject.color);
+// });
 
-debugObject.start = () => {
-  animation.play();
-};
+// // const animation = animate(
+// //   mesh.rotation,
+// //   { y: Math.PI * 2, x: Math.PI * 2 },
+// //   { duration: 10, ease: "linear", repeat: Infinity }
+// // );
+// // animation.pause();
 
-debugObject.stop = () => {
-  animation.pause();
-};
+// // debugObject.start = () => {
+// //   animation.play();
+// // };
 
-cubeTweak.add(debugObject, "start");
-cubeTweak.add(debugObject, "stop");
-debugObject.subdivision = 2;
-cubeTweak
-  .add(debugObject, "subdivision")
-  .min(1)
-  .max(20)
-  .step(1)
-  .onFinishChange(() => {
-    mesh.geometry.dispose();
-    mesh.geometry = new THREE.BoxGeometry(
-      1,
-      1,
-      1,
-      debugObject.subdivision,
-      debugObject.subdivision,
-      debugObject.subdivision
-    );
-  });
+// // debugObject.stop = () => {
+// //   animation.pause();
+// // };
+
+// // cubeTweak.add(debugObject, "start");
+// // cubeTweak.add(debugObject, "stop");
+// debugObject.subdivision = 2;
+// cubeTweak
+//   .add(debugObject, "subdivision")
+//   .min(1)
+//   .max(20)
+//   .step(1)
+//   .onFinishChange(() => {
+//     mesh.geometry.dispose();
+//     mesh.geometry = new THREE.BoxGeometry(
+//       1,
+//       1,
+//       1,
+//       debugObject.subdivision,
+//       debugObject.subdivision,
+//       debugObject.subdivision
+//     );
+//   });
 
 // const numberRotation = (number) => {
 //   return number * (Math.PI / 180);
@@ -209,17 +222,18 @@ const renderer = new THREE.WebGLRenderer({
 
 renderer.setSize(size.width, size.height);
 
+const clock = new THREE.Clock();
+
 // Animations
 const tick = () => {
   // Render
   renderer.render(scene, camera);
 
-  // Update camera
+  const elapsTime = clock.getElapsedTime();
 
-  // camera.position.x = Math.sin(-cursor.x * Math.PI * 2) * 3;
-  // camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3;
-  // camera.position.y = cursor.y * 3;
-  // camera.lookAt(mesh.position);
+  mesh.rotation.y = 0.1 * elapsTime;
+  planeMesh.rotation.y = 0.1 * elapsTime;
+  torusMesh.rotation.y = 0.1 * elapsTime;
 
   // Update Controls
   controls.update();
