@@ -111,15 +111,23 @@ cubeTweak.addColor(debugObject, "color").onChange(() => {
   material.color.set(debugObject.color);
 });
 
+const animation = animate(
+  mesh.rotation,
+  { y: Math.PI * 2, x: Math.PI * 2 },
+  { duration: 10, ease: "linear", repeat: Infinity }
+);
+animation.pause();
+
 debugObject.rotate = () => {
-  animate(
-    mesh.rotation,
-    { y: Math.PI * 2 },
-    { duration: 1, ease: [0.65, 0, 0.35, 1] }
-  );
+  animation.play();
+};
+
+debugObject.stop = () => {
+  animation.pause();
 };
 
 cubeTweak.add(debugObject, "rotate");
+cubeTweak.add(debugObject, "stop");
 debugObject.subdivision = 2;
 cubeTweak
   .add(debugObject, "subdivision")
