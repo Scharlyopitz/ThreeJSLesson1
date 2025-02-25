@@ -69,7 +69,7 @@ const scene = new THREE.Scene();
 debugObject.color = "#ff0000";
 
 const cube = new THREE.BoxGeometry(1, 1, 1);
-const plane = new THREE.PlaneGeometry(1, 1);
+const plane = new THREE.PlaneGeometry(1, 1, 20, 20);
 const torus = new THREE.TorusGeometry(0.5, 0.2, 16, 32);
 const sphere = new THREE.SphereGeometry(0.5, 15, 16);
 
@@ -102,9 +102,46 @@ const sphere = new THREE.SphereGeometry(0.5, 15, 16);
 // const material = new THREE.MeshToonMaterial({ gradientMap: texture });
 
 // MeshStandardMaterial
-const material = new THREE.MeshStandardMaterial({
-  metalness: 0.7,
-  roughness: 0.2,
+// const material = new THREE.MeshStandardMaterial({
+//   metalness: 0.7,
+//   roughness: 0.2,
+//   map: texture,
+//   aoMap: texture,
+//   aoMapIntensity: 1,
+//   displacementMap: texture,
+//   displacementScale: 0.2,
+//   metalnessMap: texture,
+//   roughnessMap: texture,
+//   normalMap: texture,
+//   // transparent: true,
+//   // alphaMap: texture,
+// });
+
+// MeshPhysicalMaterial
+const material = new THREE.MeshPhysicalMaterial({
+  metalness: 1,
+  roughness: 1,
+  map: texture,
+
+  // Clearcoat
+  // clearcoat: 1,
+  // clearcoatRoughness: 0,
+  //--------
+
+  // Shenn
+  sheen: 1,
+  sheenRoughness: 0.25,
+  // --------
+
+  // aoMap: texture,
+  // aoMapIntensity: 1,
+  // displacementMap: texture,
+  // displacementScale: 0.2,
+  // metalnessMap: texture,
+  // roughnessMap: texture,
+  // normalMap: texture,
+  // transparent: true,
+  // alphaMap: texture,
 });
 
 const ambientLight = new THREE.AmbientLight("#fff", 1);
@@ -138,6 +175,11 @@ const tweakFolder = gui.addFolder("Nice Tweak");
 
 tweakFolder.add(material, "metalness").min(0).max(1).step(0.001);
 tweakFolder.add(material, "roughness").min(0).max(1).step(0.001);
+// tweakFolder.add(material, "clearcoat").min(0).max(1).step(0.001);
+// tweakFolder.add(material, "clearcoatRoughness").min(0).max(1).step(0.001);
+tweakFolder.add(material, "sheen").min(0).max(1).step(0.001);
+tweakFolder.add(material, "sheenRoughness").min(0).max(1).step(0.001);
+tweakFolder.addColor(material, "sheenColor");
 
 // cubeTweak.add(mesh.position, "y").min(-2).max(2).step(0.01);
 // // cubeTweak.add(material, "wireframe");
