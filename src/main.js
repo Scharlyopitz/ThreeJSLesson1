@@ -97,10 +97,22 @@ const scene = new THREE.Scene();
 debugObject.color = "#ff0000";
 
 const cube = new THREE.BoxGeometry(1, 1, 1);
+const plane = new THREE.PlaneGeometry(1, 1);
+const torus = new THREE.TorusGeometry(0.5, 0.2, 16, 32);
 
-const material = new THREE.MeshBasicMaterial({ map: texture });
+const material = new THREE.MeshBasicMaterial({
+  color: "#ff0000",
+  // map: texture,
+  wireframe: false,
+});
 
 const mesh = new THREE.Mesh(cube, material);
+mesh.position.set(-1.5, 0, 0);
+
+const planeMesh = new THREE.Mesh(plane, material);
+
+const torusMesh = new THREE.Mesh(torus, material);
+torusMesh.position.set(1.5, 0, 0);
 
 // Debug UI parameters
 const cubeTweak = gui.addFolder("Super cube");
@@ -149,7 +161,7 @@ cubeTweak
 // const numberRotation = (number) => {
 //   return number * (Math.PI / 180);
 // };
-scene.add(mesh);
+scene.add(mesh, planeMesh, torusMesh);
 
 // Camera Settings
 
