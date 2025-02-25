@@ -118,7 +118,7 @@ const animation = animate(
 );
 animation.pause();
 
-debugObject.rotate = () => {
+debugObject.start = () => {
   animation.play();
 };
 
@@ -126,7 +126,7 @@ debugObject.stop = () => {
   animation.pause();
 };
 
-cubeTweak.add(debugObject, "rotate");
+cubeTweak.add(debugObject, "start");
 cubeTweak.add(debugObject, "stop");
 debugObject.subdivision = 2;
 cubeTweak
