@@ -12,4 +12,5 @@ canvas {
 
 body {
   background: #444;
+  overflow: hidden;
 }
