@@ -136,11 +136,8 @@ guiFolder.close();
 const donutsGeometry = new THREE.TorusGeometry(0.3, 0.15, 20, 45);
 
 const params = {
-  background: "#444444",
   textureMap: PaperTexture,
 };
-
-scene.background = new THREE.Color(params.background);
 
 const donutMaterial = new THREE.MeshMatcapMaterial({
   // color: "red",
@@ -165,10 +162,6 @@ for (let i = 0; i < 100; i++) {
 
   scene.add(donut);
 }
-
-guiFolder.addColor(params, "background").onChange((e) => {
-  scene.background = new THREE.Color(params.background);
-});
 
 guiFolder.addColor(donutMaterial, "color");
 guiFolder
