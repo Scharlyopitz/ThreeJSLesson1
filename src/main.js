@@ -38,7 +38,7 @@ PaperTexture.colorSpace = THREE.SRGBColorSpace;
 // Fonts
 const fontLoader = new FontLoader();
 
-fontLoader.load("../assets/font.json", (font) => {
+fontLoader.load("/assets/font.json", (font) => {
   const textType = "Swaco";
 
   const textGeometry = new TextGeometry(textType, {
