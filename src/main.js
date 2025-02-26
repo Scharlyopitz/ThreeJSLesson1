@@ -3,6 +3,8 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import GUI from "lil-gui";
+import { FontLoader } from "three/examples/jsm/Addons.js";
+import { TextGeometry } from "three/examples/jsm/Addons.js";
 
 // Texture
 
@@ -23,8 +25,74 @@ const loadingManager = new THREE.LoadingManager();
 //   console.log("error");
 // };
 
-const texture = new THREE.TextureLoader(loadingManager).load(URL);
-texture.colorSpace = THREE.SRGBColorSpace;
+const texture = new THREE.TextureLoader(loadingManager);
+
+const MidwamTexture = texture.load(URL);
+MidwamTexture.colorSpace = THREE.SRGBColorSpace;
+
+const GoldTexture = texture.load("/gold.png");
+GoldTexture.colorSpace = THREE.SRGBColorSpace;
+
+const PaperTexture = texture.load("/paper.png");
+PaperTexture.colorSpace = THREE.SRGBColorSpace;
+
+// Fonts
+const fontLoader = new FontLoader();
+
+fontLoader.load("../assets/font.json", (font) => {
+  const textType = "Swaco";
+
+  const textGeometry = new TextGeometry(textType, {
+    font: font,
+    size: 0.5,
+    depth: 0.2,
+    curveSegments: 6,
+    bevelEnabled: true,
+    bevelThickness: 0.03,
+    bevelSize: 0.02,
+    bevelOffset: 0,
+    bevelSegments: 5,
+  });
+
+  // textGeometry.computeBoundingBox();
+  // textGeometry.translate(
+  //   -(textGeometry.boundingBox.max.x - 0.02) * 0.5,
+  //   -(textGeometry.boundingBox.max.y - 0.02) * 0.5,
+  //   -(textGeometry.boundingBox.max.z - 0.03) * 0.5
+  // );
+
+  textGeometry.center();
+
+  const material = new THREE.MeshMatcapMaterial({
+    // color: "red",
+    matcap: GoldTexture,
+  });
+  const text = new THREE.Mesh(textGeometry, material);
+
+  // const axesHelper = new THREE.AxesHelper();
+
+  const donutsGeometry = new THREE.TorusGeometry(0.3, 0.15, 20, 45);
+
+  for (let i = 0; i < 100; i++) {
+    const donut = new THREE.Mesh(donutsGeometry, material);
+
+    donut.position.x = (Math.random() - 0.5) * 10;
+    donut.position.y = (Math.random() - 0.5) * 10;
+    donut.position.z = (Math.random() - 0.5) * 10;
+
+    donut.rotation.x = Math.random() * Math.PI;
+    donut.rotation.y = Math.random() * Math.PI;
+
+    const scale = Math.random();
+
+    donut.scale.x = scale;
+    donut.scale.y = scale;
+    donut.scale.z = scale;
+
+    scene.add(donut);
+  }
+  scene.add(text);
+});
 
 // Debug
 const gui = new GUI({
@@ -78,7 +146,8 @@ const material = new THREE.MeshBasicMaterial({
   wireframe: false,
 });
 
-const mesh = new THREE.Mesh(cube, material);
+// const mesh = new THREE.Mesh(cube, material);
+// scene.add(mesh);
 
 // Debug UI parameters
 const guiFolder = gui.addFolder("Nice Tweak");
@@ -88,7 +157,6 @@ guiFolder.add(material, "wireframe");
 // const numberRotation = (number) => {
 //   return number * (Math.PI / 180);
 // };
-scene.add(mesh);
 
 // Camera Settings
 
