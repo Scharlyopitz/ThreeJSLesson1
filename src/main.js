@@ -125,8 +125,6 @@ const material = new THREE.MeshBasicMaterial({
 // Debug UI parameters
 const guiFolder = gui.addFolder("Nice Tweak");
 
-guiFolder.add(material, "wireframe");
-
 // const numberRotation = (number) => {
 //   return number * (Math.PI / 180);
 // };
@@ -137,17 +135,24 @@ guiFolder.add(material, "wireframe");
 
 const donutsGeometry = new THREE.TorusGeometry(0.3, 0.15, 20, 45);
 
+const params = {
+  background: "#444444",
+  textureMap: GoldTexture,
+};
+
+scene.background = new THREE.Color(params.background);
+
 const donutMaterial = new THREE.MeshMatcapMaterial({
   // color: "red",
-  matcap: GoldTexture,
+  matcap: params.textureMap,
 });
 
 for (let i = 0; i < 100; i++) {
   const donut = new THREE.Mesh(donutsGeometry, donutMaterial);
 
-  donut.position.x = (Math.random() - 0.5) * 10;
-  donut.position.y = (Math.random() - 0.5) * 10;
-  donut.position.z = (Math.random() - 0.5) * 10;
+  donut.position.x = (Math.random() - 0.5) * 5;
+  donut.position.y = (Math.random() - 0.5) * 5;
+  donut.position.z = (Math.random() - 0.5) * 5;
 
   donut.rotation.x = Math.random() * Math.PI;
   donut.rotation.y = Math.random() * Math.PI;
@@ -160,6 +165,21 @@ for (let i = 0; i < 100; i++) {
 
   scene.add(donut);
 }
+
+guiFolder.addColor(params, "background").onChange((e) => {
+  scene.background = new THREE.Color(params.background);
+});
+
+guiFolder.addColor(donutMaterial, "color");
+guiFolder
+  .add(params, "textureMap", {
+    Midwam: MidwamTexture,
+    Gold: GoldTexture,
+    Paper: PaperTexture,
+  })
+  .onChange(() => {
+    donutMaterial.matcap = params.textureMap;
+  });
 
 // Camera Settings
 
@@ -201,6 +221,7 @@ controls.enableDamping = true;
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
   antialias: true,
+  alpha: true,
 });
 
 // Taille du rendu
