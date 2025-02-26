@@ -3,7 +3,6 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import GUI from "lil-gui";
-import { RGBMLoader } from "three/examples/jsm/Addons.js";
 
 // Texture
 
@@ -35,10 +34,11 @@ const gui = new GUI({
 const debugObject = {};
 
 const pressToHide = (e) => {
-  if (e.key === "h") {
+  const minisculKey = e.key.toLowerCase();
+  if (minisculKey === "h") {
     gui.show(gui._hidden);
   }
-  if (e.key === "j") {
+  if (minisculKey === "j") {
     gui.open(gui._closed);
   }
 };
@@ -73,186 +73,22 @@ const plane = new THREE.PlaneGeometry(1, 1, 20, 20);
 const torus = new THREE.TorusGeometry(0.5, 0.2, 16, 32);
 const sphere = new THREE.SphereGeometry(0.5, 15, 16);
 
-// MeshBasicMaterial
-// const material = new THREE.MeshBasicMaterial({
-//   // color: "#ff0000",
-//   map: texture,
-//   wireframe: false,
-//   opacity: 0.5,
-//   transparent: true,
-//   // side: THREE.DoubleSide,
-// });
-
-// MeshNormalMaterial
-// const material = new THREE.MeshNormalMaterial({ flatShading: true });
-
-// MeshMatcapMaterial
-// const material = new THREE.MeshMatcapMaterial({ matcap: texture });
-
-// MeshLambertMaterial
-// const material = new THREE.MeshLambertMaterial();
-
-// MeshLambertMaterial
-// const material = new THREE.MeshPhongMaterial({
-//   shininess: 100,
-//   specular: "#1188ff",
-// });
-
-// MeshToonMaterial
-// const material = new THREE.MeshToonMaterial({ gradientMap: texture });
-
-// MeshStandardMaterial
-// const material = new THREE.MeshStandardMaterial({
-//   metalness: 0.7,
-//   roughness: 0.2,
-//   map: texture,
-//   aoMap: texture,
-//   aoMapIntensity: 1,
-//   displacementMap: texture,
-//   displacementScale: 0.2,
-//   metalnessMap: texture,
-//   roughnessMap: texture,
-//   normalMap: texture,
-//   // transparent: true,
-//   // alphaMap: texture,
-// });
-
-// MeshPhysicalMaterial
-const material = new THREE.MeshPhysicalMaterial({
-  metalness: 0,
-  roughness: 0,
-  // map: texture,
-
-  // Clearcoat
-  // clearcoat: 1,
-  // clearcoatRoughness: 0,
-  //--------
-
-  // Shenn
-  // sheen: 1,
-  // sheenRoughness: 0.25,
-  // --------
-
-  // Iridescence
-  // iridescence: 1,
-  // iridescenceIOR: 1,
-  // iridescenceThicknessRange: [100, 800],
-  // ------
-
-  // Transimission
-  transmission: 1,
-  ior: 1.5,
-  thickness: 0.5,
-  // -----
-
-  // aoMap: texture,
-  // aoMapIntensity: 1,
-  // displacementMap: texture,
-  // displacementScale: 0.2,
-  // metalnessMap: texture,
-  // roughnessMap: texture,
-  // normalMap: texture,
-  // transparent: true,
-  // alphaMap: texture,
+const material = new THREE.MeshBasicMaterial({
+  color: "red",
+  wireframe: false,
 });
 
-const ambientLight = new THREE.AmbientLight("#fff", 1);
-
-scene.add(ambientLight);
-
-const pointLight = new THREE.PointLight("#fff", 30);
-pointLight.position.x = 2;
-pointLight.position.y = 3;
-pointLight.position.z = 4;
-scene.add(pointLight);
-
-const rgbeLoader = new RGBMLoader();
-rgbeLoader.load(URL, (evironementMAP) => {
-  evironementMAP.mapping = THREE.EquirectangularReflectionMapping;
-
-  scene.background = evironementMAP;
-  scene.environment = evironementMAP;
-});
-
-const mesh = new THREE.Mesh(sphere, material);
-mesh.position.set(-1.5, 0, 0);
-
-const planeMesh = new THREE.Mesh(plane, material);
-
-const torusMesh = new THREE.Mesh(torus, material);
-torusMesh.position.set(1.5, 0, 0);
+const mesh = new THREE.Mesh(cube, material);
 
 // Debug UI parameters
-const tweakFolder = gui.addFolder("Nice Tweak");
+const guiFolder = gui.addFolder("Nice Tweak");
 
-tweakFolder.add(material, "metalness").min(0).max(1).step(0.001);
-tweakFolder.add(material, "roughness").min(0).max(1).step(0.001);
-// tweakFolder.add(material, "clearcoat").min(0).max(1).step(0.001);
-// tweakFolder.add(material, "clearcoatRoughness").min(0).max(1).step(0.001);
-// tweakFolder.add(material, "sheen").min(0).max(1).step(0.001);
-// tweakFolder.add(material, "sheenRoughness").min(0).max(1).step(0.001);
-// tweakFolder.addColor(material, "sheenColor");
-// tweakFolder.add(material, "iridescence").min(0).max(1).step(0.001);
-// tweakFolder.add(material, "iridescenceIOR").min(0).max(2).step(0.001);
-// tweakFolder
-//   .add(material.iridescenceThicknessRange, "0")
-//   .min(1)
-//   .max(1000)
-//   .step(1);
-// tweakFolder
-//   .add(material.iridescenceThicknessRange, "1")
-//   .min(1)
-//   .max(1000)
-//   .step(1);
-tweakFolder.add(material, "transmission").min(0).max(1).step(0.001);
-tweakFolder.add(material, "ior").min(0).max(10).step(0.001);
-tweakFolder.add(material, "thickness").min(0).max(1).step(0.001);
-
-// cubeTweak.add(mesh.position, "y").min(-2).max(2).step(0.01);
-// // cubeTweak.add(material, "wireframe");
-// cubeTweak.addColor(debugObject, "color").onChange(() => {
-//   material.color.set(debugObject.color);
-// });
-
-// // const animation = animate(
-// //   mesh.rotation,
-// //   { y: Math.PI * 2, x: Math.PI * 2 },
-// //   { duration: 10, ease: "linear", repeat: Infinity }
-// // );
-// // animation.pause();
-
-// // debugObject.start = () => {
-// //   animation.play();
-// // };
-
-// // debugObject.stop = () => {
-// //   animation.pause();
-// // };
-
-// // cubeTweak.add(debugObject, "start");
-// // cubeTweak.add(debugObject, "stop");
-// debugObject.subdivision = 2;
-// cubeTweak
-//   .add(debugObject, "subdivision")
-//   .min(1)
-//   .max(20)
-//   .step(1)
-//   .onFinishChange(() => {
-//     mesh.geometry.dispose();
-//     mesh.geometry = new THREE.BoxGeometry(
-//       1,
-//       1,
-//       1,
-//       debugObject.subdivision,
-//       debugObject.subdivision,
-//       debugObject.subdivision
-//     );
-//   });
+guiFolder.add(material, "wireframe");
 
 // const numberRotation = (number) => {
 //   return number * (Math.PI / 180);
 // };
-scene.add(mesh, planeMesh, torusMesh);
+scene.add(mesh);
 
 // Camera Settings
 
@@ -306,12 +142,6 @@ const clock = new THREE.Clock();
 const tick = () => {
   // Render
   renderer.render(scene, camera);
-
-  const elapsTime = clock.getElapsedTime();
-
-  mesh.rotation.y = 0.1 * elapsTime;
-  planeMesh.rotation.y = 0.1 * elapsTime;
-  torusMesh.rotation.y = 0.1 * elapsTime;
 
   // Update Controls
   controls.update();
