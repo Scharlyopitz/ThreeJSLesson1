@@ -137,7 +137,7 @@ const donutsGeometry = new THREE.TorusGeometry(0.3, 0.15, 20, 45);
 
 const params = {
   background: "#444444",
-  textureMap: GoldTexture,
+  textureMap: PaperTexture,
 };
 
 scene.background = new THREE.Color(params.background);
