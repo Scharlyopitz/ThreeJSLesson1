@@ -74,20 +74,6 @@ const gui = new GUI({
 });
 const debugObject = {};
 
-const pressToHide = (e) => {
-  const minisculKey = e.key.toLowerCase();
-  if (minisculKey === "h") {
-    gui.show(gui._hidden);
-  }
-  if (minisculKey === "j") {
-    gui.open(gui._closed);
-  }
-};
-
-gui.close();
-
-window.addEventListener("keydown", pressToHide);
-
 // Canvas
 const canvas = document.querySelector(".webgl");
 
@@ -124,6 +110,20 @@ const material = new THREE.MeshBasicMaterial({
 
 // Debug UI parameters
 const guiFolder = gui.addFolder("Nice Tweak");
+
+const pressToHide = (e) => {
+  const minisculKey = e.key.toLowerCase();
+  if (minisculKey === "h") {
+    gui.show(gui._hidden);
+  }
+  if (minisculKey === "j") {
+    guiFolder.open(guiFolder._closed);
+  }
+};
+
+window.addEventListener("keydown", pressToHide);
+
+guiFolder.close();
 
 // const numberRotation = (number) => {
 //   return number * (Math.PI / 180);
