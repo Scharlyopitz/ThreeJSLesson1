@@ -119,9 +119,9 @@ const sphere = new THREE.SphereGeometry(0.5, 15, 16);
 
 // MeshPhysicalMaterial
 const material = new THREE.MeshPhysicalMaterial({
-  metalness: 1,
-  roughness: 1,
-  map: texture,
+  metalness: 0,
+  roughness: 0,
+  // map: texture,
 
   // Clearcoat
   // clearcoat: 1,
@@ -129,9 +129,21 @@ const material = new THREE.MeshPhysicalMaterial({
   //--------
 
   // Shenn
-  sheen: 1,
-  sheenRoughness: 0.25,
+  // sheen: 1,
+  // sheenRoughness: 0.25,
   // --------
+
+  // Iridescence
+  // iridescence: 1,
+  // iridescenceIOR: 1,
+  // iridescenceThicknessRange: [100, 800],
+  // ------
+
+  // Transimission
+  transmission: 1,
+  ior: 1.5,
+  thickness: 0.5,
+  // -----
 
   // aoMap: texture,
   // aoMapIntensity: 1,
@@ -177,9 +189,24 @@ tweakFolder.add(material, "metalness").min(0).max(1).step(0.001);
 tweakFolder.add(material, "roughness").min(0).max(1).step(0.001);
 // tweakFolder.add(material, "clearcoat").min(0).max(1).step(0.001);
 // tweakFolder.add(material, "clearcoatRoughness").min(0).max(1).step(0.001);
-tweakFolder.add(material, "sheen").min(0).max(1).step(0.001);
-tweakFolder.add(material, "sheenRoughness").min(0).max(1).step(0.001);
-tweakFolder.addColor(material, "sheenColor");
+// tweakFolder.add(material, "sheen").min(0).max(1).step(0.001);
+// tweakFolder.add(material, "sheenRoughness").min(0).max(1).step(0.001);
+// tweakFolder.addColor(material, "sheenColor");
+// tweakFolder.add(material, "iridescence").min(0).max(1).step(0.001);
+// tweakFolder.add(material, "iridescenceIOR").min(0).max(2).step(0.001);
+// tweakFolder
+//   .add(material.iridescenceThicknessRange, "0")
+//   .min(1)
+//   .max(1000)
+//   .step(1);
+// tweakFolder
+//   .add(material.iridescenceThicknessRange, "1")
+//   .min(1)
+//   .max(1000)
+//   .step(1);
+tweakFolder.add(material, "transmission").min(0).max(1).step(0.001);
+tweakFolder.add(material, "ior").min(0).max(10).step(0.001);
+tweakFolder.add(material, "thickness").min(0).max(1).step(0.001);
 
 // cubeTweak.add(mesh.position, "y").min(-2).max(2).step(0.01);
 // // cubeTweak.add(material, "wireframe");
