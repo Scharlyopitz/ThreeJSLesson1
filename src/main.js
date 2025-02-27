@@ -143,8 +143,10 @@ function HauntedHouse() {
   const ballMaterial = new THREE.MeshStandardMaterial();
   const ballMesh = new THREE.Mesh(ball, ballMaterial);
 
+  // Ambient Light
   const ambientLight = new THREE.AmbientLight("#ffffff", 1);
 
+  // DirectionalLight
   const directionalLight = new THREE.DirectionalLight("#ffffff", 1);
   const directionalLightHelper = new THREE.DirectionalLightHelper(
     directionalLight
