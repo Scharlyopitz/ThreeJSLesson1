@@ -36,36 +36,31 @@ const PaperTexture = texture.load("/paper.png");
 PaperTexture.colorSpace = THREE.SRGBColorSpace;
 
 // Fonts
-// const fontLoader = new FontLoader();
+// function TextFont() {
+//   const fontLoader = new FontLoader();
 
-// fontLoader.load("../assets/font.json", (font) => {
-//   const textType = "Swaco";
+//   fontLoader.load("../assets/font.json", (font) => {
+//     const textType = "Swaco";
 
-//   const textGeometry = new TextGeometry(textType, {
-//     font: font,
-//     size: 0.5,
-//     depth: 0.2,
-//     curveSegments: 6,
-//     bevelEnabled: true,
-//     bevelThickness: 0.03,
-//     bevelSize: 0.02,
-//     bevelOffset: 0,
-//     bevelSegments: 5,
+//     const textGeometry = new TextGeometry(textType, {
+//       font: font,
+//       size: 0.5,
+//       depth: 0.2,
+//       curveSegments: 6,
+//       bevelEnabled: true,
+//       bevelThickness: 0.03,
+//       bevelSize: 0.02,
+//       bevelOffset: 0,
+//       bevelSegments: 5,
+//     });
+
+//     textGeometry.center();
+
+//     const text = new THREE.Mesh(textGeometry, material);
+
+//     scene.add(text);
 //   });
-
-//   // textGeometry.computeBoundingBox();
-//   // textGeometry.translate(
-//   //   -(textGeometry.boundingBox.max.x - 0.02) * 0.5,
-//   //   -(textGeometry.boundingBox.max.y - 0.02) * 0.5,
-//   //   -(textGeometry.boundingBox.max.z - 0.03) * 0.5
-//   // );
-
-//   textGeometry.center();
-
-//   const text = new THREE.Mesh(textGeometry, material);
-
-//   // scene.add(text);
-// });
+// }
 
 // Debug
 const gui = new GUI({
@@ -96,17 +91,27 @@ const scene = new THREE.Scene();
 debugObject.color = "#ff0000";
 
 const cube = new THREE.BoxGeometry(1, 1, 1);
-const plane = new THREE.PlaneGeometry(1, 1, 20, 20);
+const plane = new THREE.PlaneGeometry(5, 5, 20, 20);
 const torus = new THREE.TorusGeometry(0.5, 0.2, 16, 32);
 const sphere = new THREE.SphereGeometry(0.5, 15, 16);
 
-const material = new THREE.MeshBasicMaterial({
-  color: "red",
+const material = new THREE.MeshStandardMaterial({
   wireframe: false,
+  roughness: 0.4,
 });
 
-// const mesh = new THREE.Mesh(cube, material);
-// scene.add(mesh);
+const mesh = new THREE.Mesh(cube, material);
+const torusMesh = new THREE.Mesh(torus, material);
+torusMesh.position.x = 1.5;
+
+const sphereMesh = new THREE.Mesh(sphere, material);
+sphereMesh.position.x = -1.5;
+
+const planeMesh = new THREE.Mesh(plane, material);
+planeMesh.position.y = -1;
+planeMesh.rotation.x = Math.PI / -2;
+
+scene.add(mesh, torusMesh, sphereMesh, planeMesh);
 
 // Debug UI parameters
 const guiFolder = gui.addFolder("Nice Tweak");
@@ -129,50 +134,97 @@ guiFolder.close();
 //   return number * (Math.PI / 180);
 // };
 
+// Light
+function Lights() {
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+
+  const directionalLight = new THREE.DirectionalLight(0x00fffc, 2);
+  directionalLight.position.set(1, 0.25, 0);
+
+  const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.9);
+
+  const pointLight = new THREE.PointLight(0xff9000, 0.5, 0, 2);
+  pointLight.position.set(1, -0.5, 1);
+
+  const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 6, 1, 1);
+  rectAreaLight.position.set(-1.5, 0, 2);
+  rectAreaLight.lookAt(new THREE.Vector3());
+
+  const spotLight = new THREE.SpotLight(
+    0x78ff00,
+    4.5,
+    10,
+    Math.PI * 0.1,
+    0.25,
+    1
+  );
+  spotLight.position.set(3, 1, 3);
+
+  spotLight.target.position.set(0, -2.5, 0);
+
+  scene.add(
+    ambientLight,
+    directionalLight,
+    hemisphereLight,
+    pointLight,
+    rectAreaLight,
+    spotLight,
+    spotLight.target
+  );
+
+  // GUI Folder
+  guiFolder.add(ambientLight, "intensity").min(1).max(3).step(0.01);
+  guiFolder.add(directionalLight, "intensity").min(1).max(5).step(0.01);
+}
+Lights();
+
 // Donuts
 
-// const axesHelper = new THREE.AxesHelper();
+// function Donuts() {
+//   // const axesHelper = new THREE.AxesHelper();
+//   const donutsGeometry = new THREE.TorusGeometry(0.3, 0.15, 20, 45);
 
-const donutsGeometry = new THREE.TorusGeometry(0.3, 0.15, 20, 45);
+//   const params = {
+//     textureMap: PaperTexture,
+//   };
 
-const params = {
-  textureMap: PaperTexture,
-};
+//   const donutMaterial = new THREE.MeshMatcapMaterial({
+//     // color: "red",
+//     matcap: params.textureMap,
+//   });
 
-const donutMaterial = new THREE.MeshMatcapMaterial({
-  // color: "red",
-  matcap: params.textureMap,
-});
+//   const numberOfDonuts = 100;
 
-for (let i = 0; i < 100; i++) {
-  const donut = new THREE.Mesh(donutsGeometry, donutMaterial);
+//   [...Array(numberOfDonuts)].map(() => {
+//     const donut = new THREE.Mesh(donutsGeometry, donutMaterial);
 
-  donut.position.x = (Math.random() - 0.5) * 5;
-  donut.position.y = (Math.random() - 0.5) * 5;
-  donut.position.z = (Math.random() - 0.5) * 5;
+//     donut.position.x = (Math.random() - 0.5) * 5;
+//     donut.position.y = (Math.random() - 0.5) * 5;
+//     donut.position.z = (Math.random() - 0.5) * 5;
 
-  donut.rotation.x = Math.random() * Math.PI;
-  donut.rotation.y = Math.random() * Math.PI;
+//     donut.rotation.x = Math.random() * Math.PI;
+//     donut.rotation.y = Math.random() * Math.PI;
 
-  const scale = Math.random();
+//     const scale = Math.random();
 
-  donut.scale.x = scale;
-  donut.scale.y = scale;
-  donut.scale.z = scale;
+//     donut.scale.x = scale;
+//     donut.scale.y = scale;
+//     donut.scale.z = scale;
 
-  scene.add(donut);
-}
+//     scene.add(donut);
+//   });
 
-guiFolder.addColor(donutMaterial, "color");
-guiFolder
-  .add(params, "textureMap", {
-    Midwam: MidwamTexture,
-    Gold: GoldTexture,
-    Paper: PaperTexture,
-  })
-  .onChange(() => {
-    donutMaterial.matcap = params.textureMap;
-  });
+//   guiFolder.addColor(donutMaterial, "color");
+//   guiFolder
+//     .add(params, "textureMap", {
+//       Midwam: MidwamTexture,
+//       Gold: GoldTexture,
+//       Paper: PaperTexture,
+//     })
+//     .onChange(() => {
+//       donutMaterial.matcap = params.textureMap;
+//     });
+// }
 
 // Camera Settings
 
