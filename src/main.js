@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/Addons.js";
 import GUI from "lil-gui";
 import { FontLoader } from "three/examples/jsm/Addons.js";
 import { TextGeometry } from "three/examples/jsm/Addons.js";
+import { RectAreaLightHelper } from "three/addons/helpers/RectAreaLightHelper.js";
 
 // Texture
 
@@ -162,6 +163,21 @@ function Lights() {
 
   spotLight.target.position.set(0, -2.5, 0);
 
+  // Helper
+  const hemisphereLightHelper = new THREE.HemisphereLightHelper(
+    hemisphereLight,
+    0.2
+  );
+  const directionalLightHelper = new THREE.DirectionalLightHelper(
+    directionalLight,
+    0.2
+  );
+  const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2);
+
+  const spotLightHelper = new THREE.SpotLightHelper(spotLight, 0.2);
+
+  const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight);
+
   scene.add(
     ambientLight,
     directionalLight,
@@ -169,7 +185,12 @@ function Lights() {
     pointLight,
     rectAreaLight,
     spotLight,
-    spotLight.target
+    spotLight.target,
+    hemisphereLightHelper,
+    directionalLightHelper,
+    pointLightHelper,
+    spotLightHelper,
+    rectAreaLightHelper
   );
 
   // GUI Folder
