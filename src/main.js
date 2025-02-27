@@ -92,13 +92,17 @@ const scene = new THREE.Scene();
 debugObject.color = "#ff0000";
 
 const cube = new THREE.BoxGeometry(1, 1, 1);
-const plane = new THREE.PlaneGeometry(5, 5, 20, 20);
+const plane = new THREE.PlaneGeometry(
+  5,
+  5
+  //  20, 20
+);
 const torus = new THREE.TorusGeometry(0.5, 0.2, 16, 32);
 const sphere = new THREE.SphereGeometry(0.5, 15, 16);
 
 const material = new THREE.MeshStandardMaterial({
   wireframe: false,
-  roughness: 0.4,
+  roughness: 0.7,
 });
 
 const mesh = new THREE.Mesh(cube, material);
@@ -106,13 +110,13 @@ const torusMesh = new THREE.Mesh(torus, material);
 torusMesh.position.x = 1.5;
 
 const sphereMesh = new THREE.Mesh(sphere, material);
-sphereMesh.position.x = -1.5;
+// sphereMesh.position.x = -1.5;
 
 const planeMesh = new THREE.Mesh(plane, material);
-planeMesh.position.y = -1;
+planeMesh.position.y = -0.5;
 planeMesh.rotation.x = Math.PI / -2;
 
-scene.add(mesh, torusMesh, sphereMesh, planeMesh);
+scene.add(sphereMesh, planeMesh);
 
 // Debug UI parameters
 const guiFolder = gui.addFolder("Nice Tweak");
@@ -135,69 +139,99 @@ guiFolder.close();
 //   return number * (Math.PI / 180);
 // };
 
-// Light
-function Lights() {
+// Shadows
+function Shadows() {
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 
-  const directionalLight = new THREE.DirectionalLight(0x00fffc, 2);
-  directionalLight.position.set(1, 0.25, 0);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+  directionalLight.position.set(2, 2, -1);
+  directionalLight.castShadow = true;
+  directionalLight.shadow.mapSize.width = 1024;
+  directionalLight.shadow.mapSize.height = 1024;
 
-  const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.9);
+  // Réglage caméra proche et loin
+  directionalLight.shadow.camera.near = 1;
+  directionalLight.shadow.camera.far = 7;
 
-  const pointLight = new THREE.PointLight(0xff9000, 0.5, 0, 2);
-  pointLight.position.set(1, -0.5, 1);
-
-  const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 6, 1, 1);
-  rectAreaLight.position.set(-1.5, 0, 2);
-  rectAreaLight.lookAt(new THREE.Vector3());
-
-  const spotLight = new THREE.SpotLight(
-    0x78ff00,
-    4.5,
-    10,
-    Math.PI * 0.1,
-    0.25,
-    1
-  );
-  spotLight.position.set(3, 1, 3);
-
-  spotLight.target.position.set(0, -2.5, 0);
-
-  // Helper
-  const hemisphereLightHelper = new THREE.HemisphereLightHelper(
-    hemisphereLight,
-    0.2
-  );
-  const directionalLightHelper = new THREE.DirectionalLightHelper(
-    directionalLight,
-    0.2
-  );
-  const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2);
-
-  const spotLightHelper = new THREE.SpotLightHelper(spotLight, 0.2);
-
-  const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight);
-
-  scene.add(
-    ambientLight,
-    directionalLight,
-    hemisphereLight,
-    pointLight,
-    rectAreaLight,
-    spotLight,
-    spotLight.target,
-    hemisphereLightHelper,
-    directionalLightHelper,
-    pointLightHelper,
-    spotLightHelper,
-    rectAreaLightHelper
+  const directionalLightCameraHelper = new THREE.CameraHelper(
+    directionalLight.shadow.camera
   );
 
-  // GUI Folder
-  guiFolder.add(ambientLight, "intensity").min(1).max(3).step(0.01);
-  guiFolder.add(directionalLight, "intensity").min(1).max(5).step(0.01);
+  guiFolder.add(directionalLight, "intensity").min(0).max(1).step(0.001);
+  guiFolder.add(directionalLight.position, "x").min(-5).max(5).step(0.001);
+  guiFolder.add(directionalLight.position, "y").min(-5).max(5).step(0.001);
+  guiFolder.add(directionalLight.position, "z").min(-5).max(5).step(0.001);
+
+  sphereMesh.castShadow = true;
+
+  planeMesh.receiveShadow = true;
+
+  scene.add(ambientLight, directionalLight, directionalLightCameraHelper);
 }
-Lights();
+Shadows();
+
+// Light
+// function Lights() {
+//   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+
+//   const directionalLight = new THREE.DirectionalLight(0x00fffc, 2);
+//   directionalLight.position.set(1, 0.25, 0);
+
+//   const hemisphereLight = new THREE.HemisphereLight(0xff0000, 0x0000ff, 0.9);
+
+//   const pointLight = new THREE.PointLight(0xff9000, 0.5, 0, 2);
+//   pointLight.position.set(1, -0.5, 1);
+
+//   const rectAreaLight = new THREE.RectAreaLight(0x4e00ff, 6, 1, 1);
+//   rectAreaLight.position.set(-1.5, 0, 2);
+//   rectAreaLight.lookAt(new THREE.Vector3());
+
+//   const spotLight = new THREE.SpotLight(
+//     0x78ff00,
+//     4.5,
+//     10,
+//     Math.PI * 0.1,
+//     0.25,
+//     1
+//   );
+//   spotLight.position.set(3, 1, 3);
+
+//   spotLight.target.position.set(0, -2.5, 0);
+
+//   // Helper
+//   const hemisphereLightHelper = new THREE.HemisphereLightHelper(
+//     hemisphereLight,
+//     0.2
+//   );
+//   const directionalLightHelper = new THREE.DirectionalLightHelper(
+//     directionalLight,
+//     0.2
+//   );
+//   const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.2);
+
+//   const spotLightHelper = new THREE.SpotLightHelper(spotLight, 0.2);
+
+//   const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight);
+
+//   scene.add(
+//     ambientLight,
+//     directionalLight,
+//     hemisphereLight,
+//     pointLight,
+//     rectAreaLight,
+//     spotLight,
+//     spotLight.target,
+//     hemisphereLightHelper,
+//     directionalLightHelper,
+//     pointLightHelper,
+//     spotLightHelper,
+//     rectAreaLightHelper
+//   );
+
+//   // GUI Folder
+//   guiFolder.add(ambientLight, "intensity").min(1).max(3).step(0.01);
+//   guiFolder.add(directionalLight, "intensity").min(1).max(5).step(0.01);
+// }
 
 // Donuts
 
@@ -280,9 +314,6 @@ controls.enableDamping = true;
 // controls.target.x = 2;
 // controls.update();
 
-// LookAt
-// camera.lookAt(mesh.position);
-
 // Renderer(pour avoir un rendu)
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
@@ -290,8 +321,10 @@ const renderer = new THREE.WebGLRenderer({
   alpha: true,
 });
 
-// Taille du rendu
+// Handle shadowMap
+renderer.shadowMap.enabled = true;
 
+// Taille du rendu
 renderer.setSize(size.width, size.height);
 
 const clock = new THREE.Clock();
