@@ -133,8 +133,6 @@ const pressToHide = (e) => {
 
 window.addEventListener("keydown", pressToHide);
 
-guiFolder.close();
-
 // const numberRotation = (number) => {
 //   return number * (Math.PI / 180);
 // };
@@ -144,29 +142,84 @@ function Shadows() {
   const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 
   const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-  directionalLight.position.set(2, 2, -1);
+  directionalLight.position.set(0.891, 1.713, 2.385);
   directionalLight.castShadow = true;
   directionalLight.shadow.mapSize.width = 1024;
   directionalLight.shadow.mapSize.height = 1024;
 
+  // Position
+  directionalLight.shadow.camera.top = 2;
+  // directionalLight.shadow.camera.bottom = 2;
+  directionalLight.shadow.camera.left = -2;
+  // directionalLight.shadow.camera.right = -2;
+
   // Réglage caméra proche et loin
   directionalLight.shadow.camera.near = 1;
-  directionalLight.shadow.camera.far = 7;
+  directionalLight.shadow.camera.far = 6;
+
+  // directionalLight.shadow.radius = 10;
 
   const directionalLightCameraHelper = new THREE.CameraHelper(
     directionalLight.shadow.camera
   );
+  directionalLightCameraHelper.visible = false;
 
-  guiFolder.add(directionalLight, "intensity").min(0).max(1).step(0.001);
-  guiFolder.add(directionalLight.position, "x").min(-5).max(5).step(0.001);
-  guiFolder.add(directionalLight.position, "y").min(-5).max(5).step(0.001);
-  guiFolder.add(directionalLight.position, "z").min(-5).max(5).step(0.001);
+  // Spotlight
+  const spotLight = new THREE.SpotLight(0xffffff, 3.6, 10, Math.PI * 0.3);
+  spotLight.castShadow = true;
+  spotLight.position.set(0, 2, 2);
+  spotLight.shadow.mapSize.width = 1024;
+  spotLight.shadow.mapSize.height = 1024;
+  spotLight.shadow.camera.fov = 30;
+  spotLight.shadow.camera.near = 2;
+  spotLight.shadow.camera.far = 5;
+
+  const spotLightCameraHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+  spotLightCameraHelper.visible = false;
+
+  // PointLight
+  const pointLight = new THREE.PointLight(0xffffff, 2.7);
+  pointLight.castShadow = true;
+  pointLight.shadow.mapSize.width = 1024;
+  pointLight.shadow.mapSize.height = 1024;
+  pointLight.shadow.camera.near = 0.1;
+  pointLight.shadow.camera.far = 5;
+  pointLight.position.set(-1, 1, 0);
+
+  const pointLightHelper = new THREE.CameraHelper(pointLight.shadow.camera);
+  pointLightHelper.visible = false;
+
+  // GUI ShadowsFolders
+
+  const shadowsFolder = guiFolder.addFolder("Directional Light Parameters");
+  shadowsFolder.add(directionalLightCameraHelper, "visible");
+  shadowsFolder.add(directionalLight, "intensity").min(0).max(1).step(0.001);
+  shadowsFolder.add(directionalLight.position, "x").min(-5).max(5).step(0.001);
+  shadowsFolder.add(directionalLight.position, "y").min(-5).max(5).step(0.001);
+  shadowsFolder.add(directionalLight.position, "z").min(-5).max(5).step(0.001);
+
+  const pointerLightFolder = guiFolder.addFolder("Pointer Light");
+  pointerLightFolder.add(pointLightHelper, "visible");
+  pointerLightFolder.add(pointLight.position, "x").min(-5).max(5).step(0.001);
+  pointerLightFolder.add(pointLight.position, "y").min(-5).max(5).step(0.001);
+  pointerLightFolder.add(pointLight.position, "z").min(-5).max(5).step(0.001);
+
+  // -----
 
   sphereMesh.castShadow = true;
 
   planeMesh.receiveShadow = true;
 
-  scene.add(ambientLight, directionalLight, directionalLightCameraHelper);
+  scene.add(
+    ambientLight,
+    directionalLight,
+    directionalLightCameraHelper,
+    spotLight,
+    spotLight.target,
+    spotLightCameraHelper,
+    pointLight,
+    pointLightHelper
+  );
 }
 Shadows();
 
@@ -234,7 +287,6 @@ Shadows();
 // }
 
 // Donuts
-
 // function Donuts() {
 //   // const axesHelper = new THREE.AxesHelper();
 //   const donutsGeometry = new THREE.TorusGeometry(0.3, 0.15, 20, 45);
@@ -323,6 +375,7 @@ const renderer = new THREE.WebGLRenderer({
 
 // Handle shadowMap
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // Taille du rendu
 renderer.setSize(size.width, size.height);
