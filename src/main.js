@@ -100,7 +100,7 @@ const plane = new THREE.PlaneGeometry(
 const torus = new THREE.TorusGeometry(0.5, 0.2, 16, 32);
 const sphere = new THREE.SphereGeometry(0.5, 15, 16);
 
-const material = new THREE.MeshStandardMaterial({
+const material = new THREE.MeshBasicMaterial({
   wireframe: false,
   // roughness: 0.7,
 });
@@ -116,7 +116,7 @@ const planeMesh = new THREE.Mesh(plane, material);
 planeMesh.position.y = -0.5;
 planeMesh.rotation.x = Math.PI / -2;
 
-scene.add(sphereMesh);
+// scene.add(sphereMesh);
 
 // Debug UI parameters
 const guiFolder = gui.addFolder("Nice Tweak");
@@ -139,6 +139,10 @@ window.addEventListener("keydown", pressToHide);
 
 // Haunted House
 function HauntedHouse() {
+  const ball = new THREE.SphereGeometry(0.5, 15, 16);
+  const ballMaterial = new THREE.MeshStandardMaterial();
+  const ballMesh = new THREE.Mesh(ball, ballMaterial);
+
   const ambientLight = new THREE.AmbientLight("#ffffff", 1);
 
   const directionalLight = new THREE.DirectionalLight("#ffffff", 1);
@@ -176,7 +180,7 @@ function HauntedHouse() {
     .max(5)
     .step(0.001);
 
-  scene.add(ambientLight, directionalLight, directionalLightHelper);
+  scene.add(ballMesh, ambientLight, directionalLight, directionalLightHelper);
 }
 HauntedHouse();
 
