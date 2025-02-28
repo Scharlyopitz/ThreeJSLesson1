@@ -147,12 +147,6 @@ function HauntedHouse() {
   );
   floor.rotation.set(-Math.PI * 0.5, 0, 0);
 
-  // Ball
-  const ballMesh = new THREE.Mesh(
-    new THREE.SphereGeometry(1, 32, 32),
-    new THREE.MeshStandardMaterial()
-  );
-
   // House container
   const house = new THREE.Group();
 
