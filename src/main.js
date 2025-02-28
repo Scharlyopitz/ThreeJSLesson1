@@ -5,6 +5,7 @@ import GUI from "lil-gui";
 import { FontLoader } from "three/examples/jsm/Addons.js";
 import { TextGeometry } from "three/examples/jsm/Addons.js";
 import { RectAreaLightHelper } from "three/addons/helpers/RectAreaLightHelper.js";
+import { Group } from "three/examples/jsm/libs/tween.module.js";
 
 // Texture
 
@@ -139,9 +140,94 @@ window.addEventListener("keydown", pressToHide);
 
 // Haunted House
 function HauntedHouse() {
-  const ball = new THREE.SphereGeometry(0.5, 15, 16);
-  const ballMaterial = new THREE.MeshStandardMaterial();
-  const ballMesh = new THREE.Mesh(ball, ballMaterial);
+  // Floor
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(20, 20),
+    new THREE.MeshStandardMaterial()
+  );
+  floor.rotation.set(-Math.PI * 0.5, 0, 0);
+
+  // Ball
+  const ballMesh = new THREE.Mesh(
+    new THREE.SphereGeometry(1, 32, 32),
+    new THREE.MeshStandardMaterial()
+  );
+
+  // House container
+  const house = new THREE.Group();
+
+  const walls = new THREE.Mesh(
+    new THREE.BoxGeometry(4, 2.5, 4),
+    new THREE.MeshStandardMaterial({
+      // opacity: 0.3,
+      // transparent: true,
+    })
+  );
+  walls.position.y = 1.25;
+
+  const roof = new THREE.Mesh(
+    new THREE.ConeGeometry(3.5, 1.5, 4),
+    new THREE.MeshStandardMaterial()
+  );
+  roof.position.set(0, 2.5 + 1.5 / 2, 0);
+  roof.rotation.set(0, Math.PI * 0.25, 0);
+
+  const door = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.5, 2),
+    new THREE.MeshStandardMaterial({
+      color: "red",
+    })
+  );
+  door.position.set(0, 1, 2 + 0.01);
+
+  // Bushes
+  const bushGeometry = new THREE.SphereGeometry(2, 15, 16);
+  const bushMaterial = new THREE.MeshStandardMaterial();
+
+  const bush1 = new THREE.Mesh(bushGeometry, bushMaterial);
+  bush1.scale.set(0.25, 0.25, 0.25);
+  bush1.position.set(1, 0.2, 2.2);
+
+  const bush2 = new THREE.Mesh(bushGeometry, bushMaterial);
+  bush2.scale.set(0.2, 0.2, 0.2);
+  bush2.position.set(1.6, 0.1, 2.1);
+
+  const bush3 = new THREE.Mesh(bushGeometry, bushMaterial);
+  bush3.scale.set(0.3, 0.3, 0.3);
+  bush3.position.set(-1.1, 0.1, 2.2);
+
+  const bush4 = new THREE.Mesh(bushGeometry, bushMaterial);
+  bush4.scale.set(0.15, 0.15, 0.15);
+  bush4.position.set(-1.4, 0.05, 2.6);
+
+  const numberOfGraves = 30;
+  const graveGeometry = new THREE.BoxGeometry(0.6, 0.8, 0.2);
+  const graveMaterial = new THREE.MeshStandardMaterial();
+
+  // Graves
+  const graves = new THREE.Group();
+
+  [...Array(numberOfGraves)].map(() => {
+    const grave = new THREE.Mesh(graveGeometry, graveMaterial);
+    const angle = Math.random() * Math.PI * 2;
+
+    const radius = 4 + Math.random() * 4;
+
+    const x = Math.cos(angle) * radius;
+    const z = Math.sin(angle) * radius;
+
+    grave.position.x = x;
+    grave.position.y = Math.random() * 0.4;
+    grave.position.z = z;
+    grave.rotation.x = (Math.random() - 0.5) * 0.4;
+    grave.rotation.y = (Math.random() - 0.5) * 0.4;
+    grave.rotation.z = (Math.random() - 0.5) * 0.4;
+
+    graves.add(grave);
+  });
+
+  house.add(bush1, bush2, bush3, bush4);
+  house.add(walls, roof, door, graves);
 
   // Ambient Light
   const ambientLight = new THREE.AmbientLight("#ffffff", 1);
@@ -151,38 +237,94 @@ function HauntedHouse() {
   const directionalLightHelper = new THREE.DirectionalLightHelper(
     directionalLight
   );
+  directionalLightHelper.visible = false;
 
   // Folder
-  const ambientLightFolder = guiFolder.addFolder("ambientLightFolder");
-  ambientLightFolder.add(ambientLight, "intensity").min(0).max(2).step(0.001);
-  ambientLightFolder.add(ambientLight.position, "x").min(-5).max(5).step(0.001);
-  ambientLightFolder.add(ambientLight.position, "y").min(-5).max(5).step(0.001);
-  ambientLightFolder.add(ambientLight.position, "z").min(-5).max(5).step(0.001);
+  function BushesFolder() {
+    const bushesFolder = guiFolder.addFolder("Bushes Parameters");
+    bushesFolder.close();
+    const bush1Folder = bushesFolder.addFolder("Bush 1");
+    bush1Folder.close();
+    bush1Folder.add(bush1.position, "x").min(-5).max(5).step(0.001);
+    bush1Folder.add(bush1.position, "y").min(-5).max(5).step(0.001);
+    bush1Folder.add(bush1.position, "z").min(-5).max(5).step(0.001);
 
-  const directionalLightFolder = guiFolder.addFolder("directionalLightFolder");
-  directionalLightFolder.add(directionalLightHelper, "visible");
-  directionalLightFolder
-    .add(directionalLight, "intensity")
-    .min(0)
-    .max(2)
-    .step(0.001);
-  directionalLightFolder
-    .add(directionalLight.position, "x")
-    .min(-5)
-    .max(5)
-    .step(0.001);
-  directionalLightFolder
-    .add(directionalLight.position, "y")
-    .min(-5)
-    .max(5)
-    .step(0.001);
-  directionalLightFolder
-    .add(directionalLight.position, "z")
-    .min(-5)
-    .max(5)
-    .step(0.001);
+    const bush2Folder = bushesFolder.addFolder("Bush 2");
+    bush2Folder.close();
+    bush2Folder.add(bush2.position, "x").min(-5).max(5).step(0.001);
+    bush2Folder.add(bush2.position, "y").min(-5).max(5).step(0.001);
+    bush2Folder.add(bush2.position, "z").min(-5).max(5).step(0.001);
 
-  scene.add(ballMesh, ambientLight, directionalLight, directionalLightHelper);
+    const bush3Folder = bushesFolder.addFolder("Bush 3");
+    bush3Folder.close();
+    bush3Folder.add(bush3.position, "x").min(-5).max(5).step(0.001);
+    bush3Folder.add(bush3.position, "y").min(-5).max(5).step(0.001);
+    bush3Folder.add(bush3.position, "z").min(-5).max(5).step(0.001);
+
+    const bush4Folder = bushesFolder.addFolder("Bush 4");
+    bush4Folder.close();
+    bush4Folder.add(bush4.position, "x").min(-5).max(5).step(0.001);
+    bush4Folder.add(bush4.position, "y").min(-5).max(5).step(0.001);
+    bush4Folder.add(bush4.position, "z").min(-5).max(5).step(0.001);
+  }
+
+  function AmbientLightFolder() {
+    const ambientLightFolder = guiFolder.addFolder("ambientLightFolder");
+    ambientLightFolder.close();
+    ambientLightFolder.add(ambientLight, "intensity").min(0).max(2).step(0.001);
+    ambientLightFolder
+      .add(ambientLight.position, "x")
+      .min(-5)
+      .max(5)
+      .step(0.001);
+    ambientLightFolder
+      .add(ambientLight.position, "y")
+      .min(-5)
+      .max(5)
+      .step(0.001);
+    ambientLightFolder
+      .add(ambientLight.position, "z")
+      .min(-5)
+      .max(5)
+      .step(0.001);
+  }
+
+  function DirectionalLightFolder() {
+    const directionalLightFolder = guiFolder.addFolder(
+      "directionalLightFolder"
+    );
+    directionalLightFolder.close();
+    directionalLightFolder.add(directionalLightHelper, "visible");
+    directionalLightFolder
+      .add(directionalLight, "intensity")
+      .min(0)
+      .max(2)
+      .step(0.001);
+    directionalLightFolder
+      .add(directionalLight.position, "x")
+      .min(-5)
+      .max(5)
+      .step(0.001);
+    directionalLightFolder
+      .add(directionalLight.position, "y")
+      .min(-5)
+      .max(5)
+      .step(0.001);
+    directionalLightFolder
+      .add(directionalLight.position, "z")
+      .min(-5)
+      .max(5)
+      .step(0.001);
+  }
+
+  // SceneADD
+  scene.add(
+    house,
+    floor,
+    ambientLight,
+    directionalLight,
+    directionalLightHelper
+  );
 }
 HauntedHouse();
 
@@ -404,7 +546,7 @@ window.addEventListener("resize", updateSize);
 
 const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
 
-camera.position.set(0, 0, 2);
+camera.position.set(5, 5, 5);
 scene.add(camera);
 
 // Controls
