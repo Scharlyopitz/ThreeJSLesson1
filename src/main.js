@@ -599,14 +599,16 @@ const tick = () => {
   // Ghost animation
   const elapstime = clock.getElapsedTime();
 
-  ghost1.position.x = Math.cos(elapstime) * 4;
-  ghost1.position.z = Math.sin(elapstime) * 4;
+  const speed = elapstime * 0.5;
 
-  ghost2.position.x = Math.cos(-elapstime) * 5;
-  ghost2.position.z = Math.sin(-elapstime) * 5;
+  ghost1.position.x = Math.cos(speed) * 4;
+  ghost1.position.z = Math.sin(speed) * 4;
 
-  ghost3.position.x = Math.cos(elapstime) * 6;
-  ghost3.position.z = Math.sin(elapstime) * 6;
+  ghost2.position.x = Math.cos(-speed) * 5;
+  ghost2.position.z = Math.sin(-speed) * 5;
+
+  ghost3.position.x = Math.cos(speed * 1.5) * 6;
+  ghost3.position.z = Math.sin(speed * 1.5) * 6;
 
   // Update Controls
   controls.update();
