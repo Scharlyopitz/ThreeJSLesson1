@@ -605,8 +605,8 @@ const tick = () => {
   ghost2.position.x = Math.cos(-elapstime) * 5;
   ghost2.position.z = Math.sin(-elapstime) * 5;
 
-  ghost3.position.x = Math.cos(elapstime * 1.5) * 6;
-  ghost3.position.z = Math.sin(elapstime * 1.5) * 6;
+  ghost3.position.x = Math.cos(elapstime) * 6;
+  ghost3.position.z = Math.sin(elapstime) * 6;
 
   // Update Controls
   controls.update();
