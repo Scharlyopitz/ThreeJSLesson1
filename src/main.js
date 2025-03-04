@@ -142,8 +142,15 @@ window.addEventListener("keydown", pressToHide);
 
 function Galaxy() {
   const parameters = {
-    count: 1000,
+    count: 100000,
     size: 0.02,
+    radius: 5,
+    branches: 3,
+    spin: 1,
+    radomness: 0.2,
+    radomnessPower: 3,
+    insideColor: "#ff6030",
+    outsideColor: "#1b3984",
   };
 
   let particleGeometry = null;
@@ -158,13 +165,35 @@ function Galaxy() {
     }
 
     const position = new Float32Array(parameters.count * 3);
+    const colors = new Float32Array(parameters.count * 3);
 
     [...Array(parameters.count)].map((_, i) => {
       const i3 = i * 3;
+      // Position
+      const radius = Math.random() * parameters.radius;
+      const branchAngle =
+        ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
+      const spinAngle = radius * parameters.spin;
 
-      position[i3] = Math.random() - 0.5;
-      position[i3 + 1] = Math.random() - 0.5;
-      position[i3 + 2] = Math.random() - 0.5;
+      const randomX =
+        Math.pow(Math.random(), parameters.radomnessPower) *
+        (Math.random() < 0.5 ? 1 : -1);
+      const randomY =
+        Math.pow(Math.random(), parameters.radomnessPower) *
+        (Math.random() < 0.5 ? 1 : -1);
+      const randomZ =
+        Math.pow(Math.random(), parameters.radomnessPower) *
+        (Math.random() < 0.5 ? 1 : -1);
+
+      position[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+      position[i3 + 1] = randomY;
+      position[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+
+      // Color
+
+      colors[i3] = 1;
+      colors[i3 + 1] = 0;
+      colors[i3 + 2] = 0;
     });
 
     particleGeometry = new THREE.BufferGeometry();
@@ -172,12 +201,17 @@ function Galaxy() {
       "position",
       new THREE.Float32BufferAttribute(position, 3)
     );
+    particleGeometry.setAttribute(
+      "color",
+      new THREE.Float32BufferAttribute(colors, 3)
+    );
 
     particuleMaterial = new THREE.PointsMaterial({
       size: parameters.size,
       sizeAttenuation: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
+      vertexColors: true,
     });
 
     particule = new THREE.Points(particleGeometry, particuleMaterial);
@@ -190,7 +224,7 @@ function Galaxy() {
   guiFolder
     .add(parameters, "count")
     .min(0)
-    .max(5000)
+    .max(200000)
     .step(1)
     .onFinishChange(generateGalaxy);
   guiFolder
@@ -198,6 +232,48 @@ function Galaxy() {
     .min(0.01)
     .max(0.1)
     .step(0.001)
+    .onFinishChange(generateGalaxy);
+  guiFolder
+    .add(parameters, "radius")
+    .min(1)
+    .max(20)
+    .step(0.001)
+    .onFinishChange(generateGalaxy);
+  guiFolder
+    .add(parameters, "branches")
+    .min(2)
+    .max(15)
+    .step(1)
+    .onFinishChange(generateGalaxy);
+  guiFolder
+    .add(parameters, "spin")
+    .min(-5)
+    .max(5)
+    .step(0.01)
+    .onFinishChange(generateGalaxy);
+  guiFolder
+    .add(parameters, "radomness")
+    .min(0)
+    .max(2)
+    .step(0.01)
+    .onFinishChange(generateGalaxy);
+  guiFolder
+    .add(parameters, "radomnessPower")
+    .min(1)
+    .max(10)
+    .step(0.01)
+    .onFinishChange(generateGalaxy);
+  guiFolder
+    .addColor(parameters, "insideColor")
+    .min(1)
+    .max(10)
+    .step(0.01)
+    .onFinishChange(generateGalaxy);
+  guiFolder
+    .addColor(parameters, "outsideColor")
+    .min(1)
+    .max(10)
+    .step(0.01)
     .onFinishChange(generateGalaxy);
 }
 Galaxy();
