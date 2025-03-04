@@ -146,9 +146,9 @@ function Galaxy() {
     size: 0.01,
     radius: 5,
     branches: 3,
-    spin: 1,
-    radomness: 0.2,
-    radomnessPower: 3,
+    spin: -4,
+    randomness: 0.2,
+    randomnessPower: 5,
     insideColor: "#ff6030",
     outsideColor: "#1b3984",
   };
@@ -179,14 +179,20 @@ function Galaxy() {
       const spinAngle = radius * parameters.spin;
 
       const randomX =
-        Math.pow(Math.random(), parameters.radomnessPower) *
-        (Math.random() < 0.5 ? 1 : -1);
+        Math.pow(Math.random(), parameters.randomnessPower) *
+        (Math.random() < 0.5 ? 1 : -1) *
+        radius *
+        parameters.randomness;
       const randomY =
-        Math.pow(Math.random(), parameters.radomnessPower) *
-        (Math.random() < 0.5 ? 1 : -1);
+        Math.pow(Math.random(), parameters.randomnessPower) *
+        (Math.random() < 0.5 ? 1 : -1) *
+        radius *
+        parameters.randomness;
       const randomZ =
-        Math.pow(Math.random(), parameters.radomnessPower) *
-        (Math.random() < 0.5 ? 1 : -1);
+        Math.pow(Math.random(), parameters.randomnessPower) *
+        (Math.random() < 0.5 ? 1 : -1) *
+        radius *
+        parameters.randomness;
 
       position[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
       position[i3 + 1] = randomY;
@@ -257,13 +263,13 @@ function Galaxy() {
     .step(0.01)
     .onFinishChange(generateGalaxy);
   guiFolder
-    .add(parameters, "radomness")
+    .add(parameters, "randomness")
     .min(0)
     .max(2)
     .step(0.01)
     .onFinishChange(generateGalaxy);
   guiFolder
-    .add(parameters, "radomnessPower")
+    .add(parameters, "randomnessPower")
     .min(1)
     .max(10)
     .step(0.01)
