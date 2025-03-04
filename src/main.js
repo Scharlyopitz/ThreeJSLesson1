@@ -141,20 +141,27 @@ window.addEventListener("keydown", pressToHide);
 // Particle
 function Particles() {
   const geometry = new THREE.BufferGeometry();
-  const numberOfParticles = 100;
+  const numberOfParticles = 5000;
 
   const position = new Float32Array(numberOfParticles * 3);
-
-  [...Array(numberOfParticles)].map((_, i) => {
-    position[i] = (Math.random() - 0.5) * 5;
-  });
+  const colorsArray = new Float32Array(numberOfParticles * 3);
 
   geometry.setAttribute("position", new THREE.BufferAttribute(position, 3));
+  geometry.setAttribute("color", new THREE.BufferAttribute(colorsArray, 3));
   const particleMaterial = new THREE.PointsMaterial({
-    size: 0.02,
+    size: 0.1,
     sizeAttenuation: true,
+    // map: MidwamTexture,
   });
   const particle = new THREE.Points(geometry, particleMaterial);
+
+  [...Array(numberOfParticles)].map((_, i) => {
+    position[i] = (Math.random() - 0.5) * 10;
+    colorsArray[i] = Math.random();
+  });
+
+  particleMaterial.vertexColors = true;
+
   scene.add(particle);
 }
 Particles();
