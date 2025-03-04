@@ -138,33 +138,96 @@ window.addEventListener("keydown", pressToHide);
 //   return number * (Math.PI / 180);
 // };
 
-// Particle
-function Particles() {
-  const geometry = new THREE.BufferGeometry();
-  const numberOfParticles = 5000;
+// Galaxy
 
-  const position = new Float32Array(numberOfParticles * 3);
-  const colorsArray = new Float32Array(numberOfParticles * 3);
+function Galaxy() {
+  const parameters = {
+    count: 1000,
+    size: 0.02,
+  };
 
-  geometry.setAttribute("position", new THREE.BufferAttribute(position, 3));
-  geometry.setAttribute("color", new THREE.BufferAttribute(colorsArray, 3));
-  const particleMaterial = new THREE.PointsMaterial({
-    size: 0.1,
-    sizeAttenuation: true,
-    // map: MidwamTexture,
-  });
-  const particle = new THREE.Points(geometry, particleMaterial);
+  let particleGeometry = null;
+  let particuleMaterial = null;
+  let particule = null;
 
-  [...Array(numberOfParticles)].map((_, i) => {
-    position[i] = (Math.random() - 0.5) * 10;
-    colorsArray[i] = Math.random();
-  });
+  const generateGalaxy = () => {
+    if (particule !== null) {
+      particleGeometry.dispose();
+      particuleMaterial.dispose();
+      scene.remove(particule);
+    }
 
-  particleMaterial.vertexColors = true;
+    const position = new Float32Array(parameters.count * 3);
 
-  scene.add(particle);
+    [...Array(parameters.count)].map((_, i) => {
+      const i3 = i * 3;
+
+      position[i3] = Math.random() - 0.5;
+      position[i3 + 1] = Math.random() - 0.5;
+      position[i3 + 2] = Math.random() - 0.5;
+    });
+
+    particleGeometry = new THREE.BufferGeometry();
+    particleGeometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(position, 3)
+    );
+
+    particuleMaterial = new THREE.PointsMaterial({
+      size: parameters.size,
+      sizeAttenuation: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+
+    particule = new THREE.Points(particleGeometry, particuleMaterial);
+    scene.add(particule);
+  };
+  generateGalaxy();
+
+  // FOLDER
+
+  guiFolder
+    .add(parameters, "count")
+    .min(0)
+    .max(5000)
+    .step(1)
+    .onFinishChange(generateGalaxy);
+  guiFolder
+    .add(parameters, "size")
+    .min(0.01)
+    .max(0.1)
+    .step(0.001)
+    .onFinishChange(generateGalaxy);
 }
-Particles();
+Galaxy();
+
+// Particle
+// function Particles() {
+//   const geometry = new THREE.BufferGeometry();
+//   const numberOfParticles = 5000;
+
+//   const position = new Float32Array(numberOfParticles * 3);
+//   const colorsArray = new Float32Array(numberOfParticles * 3);
+
+//   geometry.setAttribute("position", new THREE.BufferAttribute(position, 3));
+//   geometry.setAttribute("color", new THREE.BufferAttribute(colorsArray, 3));
+//   const particleMaterial = new THREE.PointsMaterial({
+//     size: 0.1,
+//     sizeAttenuation: true,
+//     // map: MidwamTexture,
+//   });
+//   const particle = new THREE.Points(geometry, particleMaterial);
+
+//   [...Array(numberOfParticles)].map((_, i) => {
+//     position[i] = (Math.random() - 0.5) * 10;
+//     colorsArray[i] = Math.random();
+//   });
+
+//   particleMaterial.vertexColors = true;
+
+//   scene.add(particle);
+// }
 
 // Haunted House
 // function HauntedHouse() {
