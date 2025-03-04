@@ -143,7 +143,7 @@ window.addEventListener("keydown", pressToHide);
 function Galaxy() {
   const parameters = {
     count: 100000,
-    size: 0.02,
+    size: 0.01,
     radius: 5,
     branches: 3,
     spin: 1,
@@ -166,6 +166,9 @@ function Galaxy() {
 
     const position = new Float32Array(parameters.count * 3);
     const colors = new Float32Array(parameters.count * 3);
+
+    const colorInside = new THREE.Color(parameters.insideColor);
+    const colorOutside = new THREE.Color(parameters.outsideColor);
 
     [...Array(parameters.count)].map((_, i) => {
       const i3 = i * 3;
@@ -190,10 +193,12 @@ function Galaxy() {
       position[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
 
       // Color
+      const mixedColor = colorInside.clone();
+      mixedColor.lerp(colorOutside, radius / parameters.radius);
 
-      colors[i3] = 1;
-      colors[i3 + 1] = 0;
-      colors[i3 + 2] = 0;
+      colors[i3] = mixedColor.r;
+      colors[i3 + 1] = mixedColor.g;
+      colors[i3 + 2] = mixedColor.b;
     });
 
     particleGeometry = new THREE.BufferGeometry();
