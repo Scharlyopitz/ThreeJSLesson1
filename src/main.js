@@ -75,17 +75,16 @@ const debugObject = {};
 const canvas = document.querySelector(".webgl");
 
 // Cursor
+const cursor = {
+  x: 0,
+  y: 0,
+};
 
-// const cursor = {
-//   x: 0,
-//   y: 0,
-// };
-
-// const mouseMoove = (e) => {
-//   cursor.x = e.clientX / size.width - 0.5;
-//   cursor.y = e.clientY / size.height - 0.5;
-// };
-// window.addEventListener("mousemove", mouseMoove);
+const mouseMoove = (e) => {
+  cursor.x = e.clientX / size.width - 0.5;
+  cursor.y = e.clientY / size.height - 0.5;
+};
+window.addEventListener("mousemove", mouseMoove);
 
 // Scene
 const scene = new THREE.Scene();
@@ -138,156 +137,202 @@ window.addEventListener("keydown", pressToHide);
 //   return number * (Math.PI / 180);
 // };
 
+// Scroll Animation
+// function ScrollAnimation() {
+//   const parameters = {
+//     color: "#3136bf",
+//   };
+
+//   const materialScroll = new THREE.MeshToonMaterial({
+//     color: parameters.color,
+//   });
+
+//   const objectDistance = 4;
+
+//   const mesh1 = new THREE.Mesh(
+//     new THREE.TorusGeometry(1, 0.4, 16, 60),
+//     materialScroll
+//   );
+//   const mesh2 = new THREE.Mesh(
+//     new THREE.ConeGeometry(1, 2, 32),
+//     materialScroll
+//   );
+//   const mesh3 = new THREE.Mesh(
+//     new THREE.TorusKnotGeometry(0.8, 0.35, 100, 16),
+//     materialScroll
+//   );
+
+//   mesh1.position.y = -objectDistance * 0;
+//   mesh2.position.y = -objectDistance * 1;
+//   mesh3.position.y = -objectDistance * 2;
+
+//   mesh1.position.x = 2;
+//   mesh2.position.x = -2;
+//   mesh3.position.x = 2;
+
+//   scene.add(mesh1, mesh2, mesh3);
+
+//   const sectionMeshes = [mesh1, mesh2, mesh3];
+
+//   const directionalLight = new THREE.DirectionalLight("#ffffff", 3);
+//   directionalLight.position.set(1, 1, 0);
+//   scene.add(directionalLight);
+
+//   // FOLDERS
+//   gui.addColor(parameters, "color").onChange(() => {
+//     materialScroll.color.set(parameters.color);
+//   });
+//   gui.add(directionalLight, "intensity").min(0).max(10).step(0.01);
+// }
+
 // Galaxy
+// function Galaxy() {
+//   const parameters = {
+//     count: 100000,
+//     size: 0.01,
+//     radius: 5,
+//     branches: 3,
+//     spin: -4,
+//     randomness: 0.2,
+//     randomnessPower: 5,
+//     insideColor: "#ff6030",
+//     outsideColor: "#1b3984",
+//   };
 
-function Galaxy() {
-  const parameters = {
-    count: 100000,
-    size: 0.01,
-    radius: 5,
-    branches: 3,
-    spin: -4,
-    randomness: 0.2,
-    randomnessPower: 5,
-    insideColor: "#ff6030",
-    outsideColor: "#1b3984",
-  };
+//   let particleGeometry = null;
+//   let particuleMaterial = null;
+//   let particule = null;
 
-  let particleGeometry = null;
-  let particuleMaterial = null;
-  let particule = null;
+//   const generateGalaxy = () => {
+//     if (particule !== null) {
+//       particleGeometry.dispose();
+//       particuleMaterial.dispose();
+//       scene.remove(particule);
+//     }
 
-  const generateGalaxy = () => {
-    if (particule !== null) {
-      particleGeometry.dispose();
-      particuleMaterial.dispose();
-      scene.remove(particule);
-    }
+//     const position = new Float32Array(parameters.count * 3);
+//     const colors = new Float32Array(parameters.count * 3);
 
-    const position = new Float32Array(parameters.count * 3);
-    const colors = new Float32Array(parameters.count * 3);
+//     const colorInside = new THREE.Color(parameters.insideColor);
+//     const colorOutside = new THREE.Color(parameters.outsideColor);
 
-    const colorInside = new THREE.Color(parameters.insideColor);
-    const colorOutside = new THREE.Color(parameters.outsideColor);
+//     [...Array(parameters.count)].map((_, i) => {
+//       const i3 = i * 3;
+//       // Position
+//       const radius = Math.random() * parameters.radius;
+//       const branchAngle =
+//         ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
+//       const spinAngle = radius * parameters.spin;
 
-    [...Array(parameters.count)].map((_, i) => {
-      const i3 = i * 3;
-      // Position
-      const radius = Math.random() * parameters.radius;
-      const branchAngle =
-        ((i % parameters.branches) / parameters.branches) * Math.PI * 2;
-      const spinAngle = radius * parameters.spin;
+//       const randomX =
+//         Math.pow(Math.random(), parameters.randomnessPower) *
+//         (Math.random() < 0.5 ? 1 : -1) *
+//         radius *
+//         parameters.randomness;
+//       const randomY =
+//         Math.pow(Math.random(), parameters.randomnessPower) *
+//         (Math.random() < 0.5 ? 1 : -1) *
+//         radius *
+//         parameters.randomness;
+//       const randomZ =
+//         Math.pow(Math.random(), parameters.randomnessPower) *
+//         (Math.random() < 0.5 ? 1 : -1) *
+//         radius *
+//         parameters.randomness;
 
-      const randomX =
-        Math.pow(Math.random(), parameters.randomnessPower) *
-        (Math.random() < 0.5 ? 1 : -1) *
-        radius *
-        parameters.randomness;
-      const randomY =
-        Math.pow(Math.random(), parameters.randomnessPower) *
-        (Math.random() < 0.5 ? 1 : -1) *
-        radius *
-        parameters.randomness;
-      const randomZ =
-        Math.pow(Math.random(), parameters.randomnessPower) *
-        (Math.random() < 0.5 ? 1 : -1) *
-        radius *
-        parameters.randomness;
+//       position[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+//       position[i3 + 1] = randomY;
+//       position[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
 
-      position[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
-      position[i3 + 1] = randomY;
-      position[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+//       // Color
+//       const mixedColor = colorInside.clone();
+//       mixedColor.lerp(colorOutside, radius / parameters.radius);
 
-      // Color
-      const mixedColor = colorInside.clone();
-      mixedColor.lerp(colorOutside, radius / parameters.radius);
+//       colors[i3] = mixedColor.r;
+//       colors[i3 + 1] = mixedColor.g;
+//       colors[i3 + 2] = mixedColor.b;
+//     });
 
-      colors[i3] = mixedColor.r;
-      colors[i3 + 1] = mixedColor.g;
-      colors[i3 + 2] = mixedColor.b;
-    });
+//     particleGeometry = new THREE.BufferGeometry();
+//     particleGeometry.setAttribute(
+//       "position",
+//       new THREE.Float32BufferAttribute(position, 3)
+//     );
+//     particleGeometry.setAttribute(
+//       "color",
+//       new THREE.Float32BufferAttribute(colors, 3)
+//     );
 
-    particleGeometry = new THREE.BufferGeometry();
-    particleGeometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(position, 3)
-    );
-    particleGeometry.setAttribute(
-      "color",
-      new THREE.Float32BufferAttribute(colors, 3)
-    );
+//     particuleMaterial = new THREE.PointsMaterial({
+//       size: parameters.size,
+//       sizeAttenuation: true,
+//       depthWrite: false,
+//       blending: THREE.AdditiveBlending,
+//       vertexColors: true,
+//     });
 
-    particuleMaterial = new THREE.PointsMaterial({
-      size: parameters.size,
-      sizeAttenuation: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      vertexColors: true,
-    });
+//     particule = new THREE.Points(particleGeometry, particuleMaterial);
+//     scene.add(particule);
+//   };
+//   generateGalaxy();
 
-    particule = new THREE.Points(particleGeometry, particuleMaterial);
-    scene.add(particule);
-  };
-  generateGalaxy();
+//   // FOLDER
 
-  // FOLDER
-
-  guiFolder
-    .add(parameters, "count")
-    .min(0)
-    .max(200000)
-    .step(1)
-    .onFinishChange(generateGalaxy);
-  guiFolder
-    .add(parameters, "size")
-    .min(0.01)
-    .max(0.1)
-    .step(0.001)
-    .onFinishChange(generateGalaxy);
-  guiFolder
-    .add(parameters, "radius")
-    .min(1)
-    .max(20)
-    .step(0.001)
-    .onFinishChange(generateGalaxy);
-  guiFolder
-    .add(parameters, "branches")
-    .min(2)
-    .max(15)
-    .step(1)
-    .onFinishChange(generateGalaxy);
-  guiFolder
-    .add(parameters, "spin")
-    .min(-5)
-    .max(5)
-    .step(0.01)
-    .onFinishChange(generateGalaxy);
-  guiFolder
-    .add(parameters, "randomness")
-    .min(0)
-    .max(2)
-    .step(0.01)
-    .onFinishChange(generateGalaxy);
-  guiFolder
-    .add(parameters, "randomnessPower")
-    .min(1)
-    .max(10)
-    .step(0.01)
-    .onFinishChange(generateGalaxy);
-  guiFolder
-    .addColor(parameters, "insideColor")
-    .min(1)
-    .max(10)
-    .step(0.01)
-    .onFinishChange(generateGalaxy);
-  guiFolder
-    .addColor(parameters, "outsideColor")
-    .min(1)
-    .max(10)
-    .step(0.01)
-    .onFinishChange(generateGalaxy);
-}
-Galaxy();
+//   guiFolder
+//     .add(parameters, "count")
+//     .min(0)
+//     .max(200000)
+//     .step(1)
+//     .onFinishChange(generateGalaxy);
+//   guiFolder
+//     .add(parameters, "size")
+//     .min(0.01)
+//     .max(0.1)
+//     .step(0.001)
+//     .onFinishChange(generateGalaxy);
+//   guiFolder
+//     .add(parameters, "radius")
+//     .min(1)
+//     .max(20)
+//     .step(0.001)
+//     .onFinishChange(generateGalaxy);
+//   guiFolder
+//     .add(parameters, "branches")
+//     .min(2)
+//     .max(15)
+//     .step(1)
+//     .onFinishChange(generateGalaxy);
+//   guiFolder
+//     .add(parameters, "spin")
+//     .min(-5)
+//     .max(5)
+//     .step(0.01)
+//     .onFinishChange(generateGalaxy);
+//   guiFolder
+//     .add(parameters, "randomness")
+//     .min(0)
+//     .max(2)
+//     .step(0.01)
+//     .onFinishChange(generateGalaxy);
+//   guiFolder
+//     .add(parameters, "randomnessPower")
+//     .min(1)
+//     .max(10)
+//     .step(0.01)
+//     .onFinishChange(generateGalaxy);
+//   guiFolder
+//     .addColor(parameters, "insideColor")
+//     .min(1)
+//     .max(10)
+//     .step(0.01)
+//     .onFinishChange(generateGalaxy);
+//   guiFolder
+//     .addColor(parameters, "outsideColor")
+//     .min(1)
+//     .max(10)
+//     .step(0.01)
+//     .onFinishChange(generateGalaxy);
+// }
 
 // Particle
 // function Particles() {
@@ -760,14 +805,22 @@ const updateSize = () => {
 };
 window.addEventListener("resize", updateSize);
 
-const camera = new THREE.PerspectiveCamera(75, size.width / size.height);
+const cameraGroup = new THREE.Group();
+scene.add(cameraGroup);
 
-camera.position.set(0, 0, 3);
-scene.add(camera);
+const camera = new THREE.PerspectiveCamera(
+  35,
+  size.width / size.height
+  // 0.1,
+  // 100
+);
+
+camera.position.set(0, 0, 6);
+cameraGroup.add(camera);
 
 // Controls
-const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true;
+// const controls = new OrbitControls(camera, canvas);
+// controls.enableDamping = true;
 
 // controls.target.x = 2;
 // controls.update();
@@ -786,15 +839,44 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 // Taille du rendu
 renderer.setSize(size.width, size.height);
 
+// Scroll
+let ScrollY = window.scrollY;
+
+window.addEventListener("scroll", (e) => {
+  ScrollY = window.scrollY;
+});
+
 const clock = new THREE.Clock();
+let previousTime = 0;
 
 // Animations
 const tick = () => {
   // Render
   renderer.render(scene, camera);
 
+  // // Animate Scroll Meshes
+  // const elapstime = clock.getElapsedTime();
+  // sectionMeshes.map((mesh) => {
+  //   mesh.rotation.x = elapstime * 0.1;
+  //   mesh.rotation.y = elapstime * 0.14;
+  // });
+
+  // // Moove camera position on scroll
+  // camera.position.y = (-ScrollY / size.height) * objectDistance;
+
+  // // Moove camera with cursor
+
+  // const deltaTime = elapstime - previousTime;
+  // previousTime = elapstime;
+  // const parallaxX = cursor.x;
+  // const parallaxY = -cursor.y;
+  // cameraGroup.position.x +=
+  //   (parallaxX - cameraGroup.position.x) * 5 * deltaTime;
+  // cameraGroup.position.y +=
+  //   (parallaxY - cameraGroup.position.y) * 5 * deltaTime;
+
   // Update Controls
-  controls.update();
+  // controls.update();
 
   // Animation(activation)
   window.requestAnimationFrame(tick);
