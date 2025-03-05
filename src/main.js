@@ -137,6 +137,38 @@ window.addEventListener("keydown", pressToHide);
 //   return number * (Math.PI / 180);
 // };
 
+// Shader
+function Shader() {
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1, 32, 32),
+    new THREE.RawShaderMaterial({
+      vertexShader: `
+      uniform mat4 projectionMatrix;
+      uniform mat4 viewMatrix;
+      uniform mat4 modelMatrix;
+
+      attribute vec3 position;
+
+      void main()
+      {
+        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+      }
+      `,
+      fragmentShader: `
+      precision mediump float;
+      
+      void main()
+      {
+        gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+      }
+      `,
+    })
+  );
+
+  scene.add(mesh);
+}
+Shader();
+
 // Scroll Animation
 // function ScrollAnimation() {
 //   const parameters = {
@@ -815,7 +847,7 @@ const camera = new THREE.PerspectiveCamera(
   // 100
 );
 
-camera.position.set(0, 0, 6);
+camera.position.set(0, 0, 3);
 cameraGroup.add(camera);
 
 // Controls
