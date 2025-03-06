@@ -6,6 +6,7 @@ import { FontLoader } from "three/examples/jsm/Addons.js";
 import { TextGeometry } from "three/examples/jsm/Addons.js";
 import { RectAreaLightHelper } from "three/addons/helpers/RectAreaLightHelper.js";
 import { Group } from "three/examples/jsm/libs/tween.module.js";
+import { BufferAttribute } from "three";
 
 // Texture
 
@@ -139,51 +140,110 @@ window.addEventListener("keydown", pressToHide);
 // };
 
 // Shader
-function Shader() {
-  const testVertexShader = `
+// function Shader() {
+const testVertexShader = `
       uniform mat4 projectionMatrix;
       uniform mat4 viewMatrix;
       uniform mat4 modelMatrix;
+      uniform vec2 uFrequency;
+      uniform float uTime;
 
       attribute vec3 position;
+      attribute float aRandom;
+
+
+      attribute vec2 uv;
+
+      varying vec2 vUv;
+      varying float vElevation;
 
       void main()
       {
          vec4 modelPosition = modelMatrix * vec4(position,1.0) ;  
-         modelPosition.z += sin(modelPosition.x * 10.0) * 0.1 ;
+
+          float elevation = sin(modelPosition.x * uFrequency.x + uTime) * 0.1 ;
+          // elevation += sin(modelPosition.y * uFrequency.y ) * 0.1 ;
+
+          modelPosition.z += elevation;
+
+        //  modelPosition.z += sin(modelPosition.x * uFrequency.x + uTime) * 0.1 ;
+        //  modelPosition.z += sin(modelPosition.y * uFrequency.y ) * 0.1 ;
+
+        
+
          vec4 viewPosition = viewMatrix * modelPosition;
          vec4 projectedPosition = projectionMatrix * viewPosition;
 
          
                
         gl_Position = projectedPosition;
+
+        vUv = uv;
+        vElevation = elevation;
       }
       `;
-  const testFragmentShader = `
+const testFragmentShader = `
       precision mediump float;
-      
+      uniform vec3 uColor;
+      uniform sampler2D uTexture;
+
+      varying vec2 vUv;
+      varying float vElevation;
+
       void main()
       {
-        gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+        vec4 textureColor = texture2D(uTexture,vUv);
+        textureColor.rgb *= vElevation * 2.0 + 0.5;
+        gl_FragColor = textureColor;
       }
       `;
 
-  const planeGeometry = new THREE.PlaneGeometry(1, 1, 32, 32);
-  const planeMaterial = new THREE.RawShaderMaterial({
-    vertexShader: testVertexShader,
-    fragmentShader: testFragmentShader,
-    wireframe: false,
-    side: THREE.DoubleSide,
-    transparent: true,
-  });
+const planeGeometry = new THREE.PlaneGeometry(1, 1, 32, 32);
 
-  const mesh = new THREE.Mesh(planeGeometry, planeMaterial);
+const count = planeGeometry.attributes.position.count;
 
-  console.log(planeGeometry);
+const randoms = new Float32Array(count);
 
-  scene.add(mesh);
-}
-Shader();
+[...Array(count)].map((_, i) => {
+  randoms[i] = Math.random();
+});
+
+planeGeometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
+
+const planeMaterial = new THREE.RawShaderMaterial({
+  vertexShader: testVertexShader,
+  fragmentShader: testFragmentShader,
+  wireframe: false,
+  side: THREE.DoubleSide,
+  uniforms: {
+    uFrequency: { value: new THREE.Vector2(10, 5) },
+    uTime: { value: 0 },
+    uColor: { value: new THREE.Color("#ff0000") },
+    uTexture: { value: PaperTexture },
+  },
+});
+
+const fMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+
+fMesh.scale.y = 2 / 3;
+
+scene.add(fMesh);
+
+gui
+  .add(planeMaterial.uniforms.uFrequency.value, "x")
+  .min(0)
+  .max(20)
+  .step(0.01)
+  .name("frequencyX");
+gui
+  .add(planeMaterial.uniforms.uFrequency.value, "y")
+  .min(0)
+  .max(20)
+  .step(0.01)
+  .name("frequencyY");
+
+// }
+// Shader();
 
 // Scroll Animation
 // function ScrollAnimation() {
@@ -901,6 +961,10 @@ let previousTime = 0;
 const tick = () => {
   // Render
   renderer.render(scene, camera);
+
+  // Update planeMaterial frequency moove
+  const elapstime = clock.getElapsedTime();
+  planeMaterial.uniforms.uTime.value = elapstime;
 
   // // Animate Scroll Meshes
   // const elapstime = clock.getElapsedTime();
