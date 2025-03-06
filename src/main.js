@@ -142,17 +142,9 @@ window.addEventListener("keydown", pressToHide);
 // Shader
 // function Shader() {
 const testVertexShader = `
-      uniform mat4 projectionMatrix;
-      uniform mat4 viewMatrix;
-      uniform mat4 modelMatrix;
       uniform vec2 uFrequency;
       uniform float uTime;
-
-      attribute vec3 position;
       attribute float aRandom;
-
-
-      attribute vec2 uv;
 
       varying vec2 vUv;
       varying float vElevation;
@@ -183,7 +175,6 @@ const testVertexShader = `
       }
       `;
 const testFragmentShader = `
-      precision mediump float;
       uniform vec3 uColor;
       uniform sampler2D uTexture;
 
@@ -210,7 +201,7 @@ const randoms = new Float32Array(count);
 
 planeGeometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
 
-const planeMaterial = new THREE.RawShaderMaterial({
+const planeMaterial = new THREE.ShaderMaterial({
   vertexShader: testVertexShader,
   fragmentShader: testFragmentShader,
   wireframe: false,
