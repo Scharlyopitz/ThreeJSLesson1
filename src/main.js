@@ -149,7 +149,14 @@ function Shader() {
 
       void main()
       {
-        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+         vec4 modelPosition = modelMatrix * vec4(position,1.0) ;  
+         modelPosition.z += sin(modelPosition.x * 10.0) * 0.1 ;
+         vec4 viewPosition = viewMatrix * modelPosition;
+         vec4 projectedPosition = projectionMatrix * viewPosition;
+
+         
+               
+        gl_Position = projectedPosition;
       }
       `;
   const testFragmentShader = `
@@ -161,15 +168,18 @@ function Shader() {
       }
       `;
 
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1, 32, 32),
-    new THREE.RawShaderMaterial({
-      vertexShader: testVertexShader,
-      fragmentShader: testFragmentShader,
-      wireframe: false,
-      side: THREE.DoubleSide,
-    })
-  );
+  const planeGeometry = new THREE.PlaneGeometry(1, 1, 32, 32);
+  const planeMaterial = new THREE.RawShaderMaterial({
+    vertexShader: testVertexShader,
+    fragmentShader: testFragmentShader,
+    wireframe: false,
+    side: THREE.DoubleSide,
+    transparent: true,
+  });
+
+  const mesh = new THREE.Mesh(planeGeometry, planeMaterial);
+
+  console.log(planeGeometry);
 
   scene.add(mesh);
 }
