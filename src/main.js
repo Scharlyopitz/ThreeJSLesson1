@@ -119,7 +119,6 @@ planeMesh.rotation.x = Math.PI / -2;
 // scene.add(sphereMesh);
 
 // Debug UI parameters
-const guiFolder = gui.addFolder("Nice Tweak");
 
 const pressToHide = (e) => {
   const minisculKey = e.key.toLowerCase();
@@ -127,9 +126,11 @@ const pressToHide = (e) => {
     gui.show(gui._hidden);
   }
   if (minisculKey === "j") {
-    guiFolder.open(guiFolder._closed);
+    gui.open(gui._closed);
   }
 };
+
+gui.close();
 
 window.addEventListener("keydown", pressToHide);
 
@@ -139,10 +140,7 @@ window.addEventListener("keydown", pressToHide);
 
 // Shader
 function Shader() {
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1, 32, 32),
-    new THREE.RawShaderMaterial({
-      vertexShader: `
+  const testVertexShader = `
       uniform mat4 projectionMatrix;
       uniform mat4 viewMatrix;
       uniform mat4 modelMatrix;
@@ -153,15 +151,23 @@ function Shader() {
       {
         gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
       }
-      `,
-      fragmentShader: `
+      `;
+  const testFragmentShader = `
       precision mediump float;
       
       void main()
       {
         gl_FragColor = vec4(1.0,0.0,0.0,1.0);
       }
-      `,
+      `;
+
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1, 32, 32),
+    new THREE.RawShaderMaterial({
+      vertexShader: testVertexShader,
+      fragmentShader: testFragmentShader,
+      wireframe: false,
+      side: THREE.DoubleSide,
     })
   );
 
@@ -851,8 +857,8 @@ camera.position.set(0, 0, 3);
 cameraGroup.add(camera);
 
 // Controls
-// const controls = new OrbitControls(camera, canvas);
-// controls.enableDamping = true;
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
 
 // controls.target.x = 2;
 // controls.update();
@@ -908,7 +914,7 @@ const tick = () => {
   //   (parallaxY - cameraGroup.position.y) * 5 * deltaTime;
 
   // Update Controls
-  // controls.update();
+  controls.update();
 
   // Animation(activation)
   window.requestAnimationFrame(tick);
