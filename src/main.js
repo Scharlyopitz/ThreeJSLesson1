@@ -140,18 +140,17 @@ window.addEventListener("keydown", pressToHide);
 // };
 
 // Shader
-// function Shader() {
-const testVertexShader = `
+function Shader() {
+  const testVertexShader = `
       uniform vec2 uFrequency;
       uniform float uTime;
-      attribute float aRandom;
 
       varying vec2 vUv;
       varying float vElevation;
 
       void main()
       {
-         vec4 modelPosition = modelMatrix * vec4(position,1.0) ;  
+         vec4 modelPosition = modelMatrix * vec4(position,1.0) ;
 
           float elevation = sin(modelPosition.x * uFrequency.x + uTime) * 0.1 ;
           // elevation += sin(modelPosition.y * uFrequency.y ) * 0.1 ;
@@ -161,20 +160,16 @@ const testVertexShader = `
         //  modelPosition.z += sin(modelPosition.x * uFrequency.x + uTime) * 0.1 ;
         //  modelPosition.z += sin(modelPosition.y * uFrequency.y ) * 0.1 ;
 
-        
-
          vec4 viewPosition = viewMatrix * modelPosition;
          vec4 projectedPosition = projectionMatrix * viewPosition;
 
-         
-               
         gl_Position = projectedPosition;
 
         vUv = uv;
         vElevation = elevation;
       }
       `;
-const testFragmentShader = `
+  const testFragmentShader = `
       uniform vec3 uColor;
       uniform sampler2D uTexture;
 
@@ -189,52 +184,43 @@ const testFragmentShader = `
       }
       `;
 
-const planeGeometry = new THREE.PlaneGeometry(1, 1, 32, 32);
+  const planeGeometry = new THREE.PlaneGeometry(1, 1, 32, 32);
 
-const count = planeGeometry.attributes.position.count;
+  const planeMaterial = new THREE.ShaderMaterial({
+    vertexShader: testVertexShader,
+    fragmentShader: testFragmentShader,
+    wireframe: false,
+    side: THREE.DoubleSide,
+    uniforms: {
+      uFrequency: { value: new THREE.Vector2(10, 5) },
+      uTime: { value: 0 },
+      uColor: { value: new THREE.Color("#ff0000") },
+      uTexture: { value: PaperTexture },
+    },
+  });
 
-const randoms = new Float32Array(count);
+  const fMesh = new THREE.Mesh(planeGeometry, planeMaterial);
 
-[...Array(count)].map((_, i) => {
-  randoms[i] = Math.random();
-});
+  fMesh.scale.y = 2 / 3;
 
-planeGeometry.setAttribute("aRandom", new THREE.BufferAttribute(randoms, 1));
+  scene.add(fMesh);
 
-const planeMaterial = new THREE.ShaderMaterial({
-  vertexShader: testVertexShader,
-  fragmentShader: testFragmentShader,
-  wireframe: false,
-  side: THREE.DoubleSide,
-  uniforms: {
-    uFrequency: { value: new THREE.Vector2(10, 5) },
-    uTime: { value: 0 },
-    uColor: { value: new THREE.Color("#ff0000") },
-    uTexture: { value: PaperTexture },
-  },
-});
+  gui
+    .add(planeMaterial.uniforms.uFrequency.value, "x")
+    .min(0)
+    .max(20)
+    .step(0.01)
+    .name("frequencyX");
+  gui
+    .add(planeMaterial.uniforms.uFrequency.value, "y")
+    .min(0)
+    .max(20)
+    .step(0.01)
+    .name("frequencyY");
+}
+Shader();
 
-const fMesh = new THREE.Mesh(planeGeometry, planeMaterial);
-
-fMesh.scale.y = 2 / 3;
-
-scene.add(fMesh);
-
-gui
-  .add(planeMaterial.uniforms.uFrequency.value, "x")
-  .min(0)
-  .max(20)
-  .step(0.01)
-  .name("frequencyX");
-gui
-  .add(planeMaterial.uniforms.uFrequency.value, "y")
-  .min(0)
-  .max(20)
-  .step(0.01)
-  .name("frequencyY");
-
-// }
-// Shader();
+// Shader Pattern
 
 // Scroll Animation
 // function ScrollAnimation() {
@@ -954,8 +940,8 @@ const tick = () => {
   renderer.render(scene, camera);
 
   // Update planeMaterial frequency moove
-  const elapstime = clock.getElapsedTime();
-  planeMaterial.uniforms.uTime.value = elapstime;
+  // const elapstime = clock.getElapsedTime();
+  // planeMaterial.uniforms.uTime.value = elapstime;
 
   // // Animate Scroll Meshes
   // const elapstime = clock.getElapsedTime();
